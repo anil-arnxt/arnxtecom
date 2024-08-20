@@ -111,7 +111,7 @@ const Footer = () => {
             <a href="#!">Rugs</a>
           </p>
           <p class="mb-4">
-            <a href="#!">Electrical</a>
+            <a href="#">Electrical</a>
           </p>
           <p>
             <a href="#!">Wallpapers</a>

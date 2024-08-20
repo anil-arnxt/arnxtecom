@@ -147,7 +147,7 @@ const index = () => {
 </div>
 </div>
 
-<div className='container mx-auto flex w-100 justify-between  mt-10 mb-10'>
+<div className='container mx-auto flex w-100 justify-between flex-wrap p-5 mt-10 mb-10'>
           <h2 className='text-xl text-black-400 font-bold'>
             Featured Products
           </h2>
@@ -301,7 +301,7 @@ const index = () => {
                 </h1>
               </div>
               <div className='flex flex-row m-5'>
-                 <input className='rounded-xl bg-white m-5 w-[300px] h-[40px]'/>
+                 <input className='rounded-xl bg-white m-5 w-[300px] h-[40px] focus:outline-none px-2'/>
                 <button className='rounded-xl bg-yellow-300 m-5 h-[40px] p-2'>
                    Subscribe
                 </button>
