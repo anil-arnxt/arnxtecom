@@ -7,7 +7,7 @@ import toast, { Toaster } from "react-hot-toast";
 const Index = () => {
   const [formFields, setFormFields] = useState({
     name: "",
-    Id: "", // email field
+    Id: "",
     mobile: "",
     password: "",
     confirmPassword: "",
@@ -27,7 +27,6 @@ const Index = () => {
     setIsLoading(true);
 
     try {
-      // Validation before sending request
       if (
         formFields.name === "" ||
         formFields.Id === "" ||
@@ -84,7 +83,7 @@ const Index = () => {
     <div>
       <Navbar />
       <div className="container mx-auto">
-        <div className="flex min-h-full flex-col justify-center px-6 py-1 lg:px-8">
+        <div className="flex min-h-full flex-col justify-center px-6 py-10 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <img
               className="mx-auto h-10 w-auto"
@@ -205,7 +204,7 @@ const Index = () => {
               </div>
             </form>
 
-            <p className="py-10 text-center text-sm text-gray-500">
+            <p className="mt-5 text-center text-sm text-gray-500">
               Already have an account?
               <a
                 href="/login"
