@@ -4,30 +4,67 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Image from 'next/image'
 import { Box, Boxes, Heart, MinusCircleIcon, PlusCircleIcon } from 'lucide-react'
+import axios from 'axios'
+
+const getsingleproducturl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getsinglearnxtecomproduct'
 
 
 
+export async function getStaticProps({ params }) {
+  const { pid } = params; 
 
-const Product = () => {
+  const body = {
+    Id: pid,
+  };
 
-    const router = useRouter()
-    const { pid } = router.query
+  const response = await axios.post(getsingleproducturl, body);
+  const dataitem = response.data[0];
 
-    console.log(pid)
+  return {
+    props: { dataitem },
+  };
+}
 
-    const [activeIndex, setActiveIndex] = useState(null);
+export async function getStaticPaths() {
 
-    const handleClick = (index) => {
+
+  return {
+    paths: [],
+    fallback: 'blocking', 
+  };
+}
+
+const Product = ({dataitem}) => {
+
+ 
+        console.log(dataitem)
+
+        const [currentproductdetails, setCurrentProductDetails] = useState(dataitem['features'])
+
+
+        const handledetailsclick = (value)=>{
+              
+
+       
+
+        }
+
+        
+
+    const [activeIndex, setActiveIndex] = useState(0);
+
+    const handleClick = (index, value) => {
       setActiveIndex(index);
+      setCurrentProductDetails(dataitem[value])
     };
   
     const items = [
       'Features',
       'Properties',
-      'Care Instructions',
-      'Warranty',
+      'Care',
+      'Warrantydetails',
       'Returns',
-      'Quality Promise'
+      'QualityPromise'
     ];
 
  
@@ -40,30 +77,35 @@ const Product = () => {
     <div className='md:col-span-5 flex justify-center md:justify-start'>
       <div className='grid grid-rows-12 w-full md:w-[500px] place-items-center'>
         <div className='row-span-9 w-full flex justify-center'>
-          <Image src='/images/washingmachine.png' width={400} height={400} className='w-full max-w-[400px]'/>
+          <Image src={dataitem && dataitem.productmainimage} width={400} height={400} className='w-full max-w-[400px]'/>
         </div>
         <div className='row-span-3 w-full'>
           <div className='p-2 grid grid-cols-4 gap-2 place-items-center'>
-            <div className='border-2 p-2'>
-              <Image src='/images/washingmachine.png' width={200} height={200} className='w-full max-w-[100px]'/>
-            </div>
-            <div className='border-2 p-2'>
-              <Image src='/images/washingmachine.png' width={200} height={200} className='w-full max-w-[100px]'/>
-            </div>
-            <div className='border-2 p-2'>
-              <Image src='/images/washingmachine.png' width={200} height={200} className='w-full max-w-[100px]'/>
-            </div>
-            <div className='border-2 p-2'>
-              <Image src='/images/washingmachine.png' width={200} height={200} className='w-full max-w-[100px]'/>
-            </div>
+
+            {
+
+              dataitem && dataitem.productrestimage?.map((prod,index)=>(
+                <div className='border-2 p-2'>
+                <Image src={prod} width={200} height={200} className='w-full max-w-[100px]'/>
+              </div>
+              ))
+            }
+          
           </div>
         </div>
       </div>
     </div>
     <div className='md:col-span-7'>
       <div className='w-full md:ml-20 flex flex-col mt-10'>
-        <p className='text-xl font-bold max-w-[400px]'>LG 8 Kg 5 Star Inverter TurboDrum Fully Automatic Top Loading Washing Machine</p>
-        <p className='text-xl text-zinc-600 font-bold mt-5'>₹ 14852</p>
+        <p className='text-xl font-bold max-w-[400px]'>{dataitem && dataitem.productname.toUpperCase()}</p>
+
+        <div className='flex flex-row'>
+        <p className='text-md text-zinc-400 font-bold mt-5 line-through'>₹ {dataitem && dataitem.mrp}</p>
+
+        <p className='text-xl text-zinc-600 font-bold mt-5 ml-2'>₹ {dataitem && dataitem.offerprice}</p>
+
+
+        </div>
 
         <div className='flex flex-row justify-between w-full md:w-[160px] mt-5'>
           <div>
@@ -102,7 +144,7 @@ const Product = () => {
           className={`border-r-2 p-2 w-full flex justify-center items-center cursor-pointer ${
             activeIndex === index ? 'bg-gray-200' : ''
           }`}
-          onClick={() => handleClick(index)}
+          onClick={() => handleClick(index, item.toLowerCase())}
         >
           <p className='text-sm uppercase text-amber-600'>{item}</p>
         </div>
@@ -112,12 +154,7 @@ const Product = () => {
       <ul className='list-none p-10'>
         <li>
             <p  className='text-justify'>
-            A contemporary looking coffee table which makes a chic centre piece in your living room
-The glass table top and shelf below help make place for your coffee mugs, daily newspapers and magazines
-Made of high grade Sheesham wood and 6 mm thick glass
-Please refer to the dimensioned view image for details of the dimensions
-No assembly required
-For indoor use only 
+               {currentproductdetails}
             </p>
         </li>
 

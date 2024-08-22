@@ -10,9 +10,28 @@ import ReactPaginate from "react-paginate";
 import { AiFillLeftCircle, AiFillRightCircle } from "react-icons/ai"; 
 import { IconContext } from "react-icons"; 
 import '@/pages/products/products.css'
+import axios from 'axios';
+import { useRouter } from 'next/router';
+
+ const getproductsurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getarnxtecomproducts'
+export async function getStaticProps() {
 
 
-const index = () => {
+  const  response = await axios.get(getproductsurl)
+
+
+    const dataitem = response.data
+
+  return {
+      props: { dataitem }
+  }
+
+}
+
+
+const index = ({dataitem}) => {
+
+   
 
     const [page, setPage] = useState(0);
 
@@ -22,10 +41,12 @@ const data = ['fadsf', 'fasfda', 'fasdfasdf', 'fasfdsa','fadsf', 'fasfda', 'fasd
 
 
 const filterData = useMemo(() => {
-    return data.filter((item, index) => {
+    return dataitem.filter((item, index) => {
         return (index >= page * n) & (index < (page + 1) * n);
     })
 }, [page])
+
+const router = useRouter()
 
     const [value, setValue] = useState([100, 60000]);
 
@@ -38,6 +59,13 @@ const filterData = useMemo(() => {
 
     const handledropdowntoggle = () =>{
         setDropDown(!dropdown)
+    }
+
+    const handleproductclick = (id)=>{
+
+    router.push(`/product/${id}`)
+      
+
     }
   return (
 
@@ -409,174 +437,48 @@ step={5}
           </div>
 
           <div className='grid grid-cols-1 md:grid-cols-3 w-full gap-2 h-[600px] overflow-y-scroll no-scrollbar mt-10 place-items-center'>
-          <div className='h-auto w-[250px] shadow-lg rounded-xl p-2 '>
-               <div className='relative top-5 flex justify-between mb-4'>
 
-                 <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-                  10%
-                    
+            {
+              dataitem && dataitem.map((product,index)=>(
+      
+                <div className='h-auto w-[250px] shadow-lg rounded-xl p-2 '>
+                <div className='relative top-5 flex justify-between mb-4'>
+ 
+                  <button className='w-auto bg-red-300 rounded-3xl p-1 '>
+                   { Math.round( (Number(product.mrp) - Number(product.offerprice) )/ Number(product.mrp)*100)}%
+                     
+                  </button>
+                <Heart className='cursor-pointer' />
+              
+ 
+                </div>
+                 <div className='flex justify-center items-center w-full h-[250px] mt-5'>
+                     <img src={product.productmainimage} className='object-contain w-full h-full roundex-xl'/>
+                  </div>
+              
+               <div className='mt-2'>
+               <p className='text-l text-zinc-400 font-bold'>
+      {product.productname.length > 50 
+        ? `${product.productname.substring(0, 50)}...` 
+        : product.productname}
+    </p>
+               </div>
+                <div className='flex flex-row justify-between mt-2'>
+                  
+                 <p className='mt-2'>₹ {product.offerprice} `</p>
+                 <button className='rounded-xl bg-green-300 p-2'  onClick={()=>handleproductclick(product.Id)} >
+                   Buy now
                  </button>
-               <Heart className='cursor-pointer' />
-             
+ 
+                </div>
+           
+ 
+           </div>
 
-               </div>
-              <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-              <div className='mt-2'>
-                 <p className='text-l text-zinc-400 font-bold'>
-                   Front load washing machine 
-
-                 </p>
-              </div>
-               <div className='flex flex-row justify-between mt-2'>
-                <p className='mt-2'>₹ 14000   </p>
-                <button className='rounded-xl bg-green-300 p-2' >
-                  Buy now
-                </button>
-
-               </div>
-          
-
-          </div>
-          <div className='h-auto w-[250px] shadow-lg rounded-xl p-2'>
-               <div className='relative top-5 flex justify-between mb-4'>
-
-                 <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-                  10%
-                    
-                 </button>
-               <Heart className='cursor-pointer' />
-             
-
-               </div>
-              <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-              <div className='mt-2'>
-                 <p className='text-l text-zinc-400 font-bold'>
-                   Front load washing machine 
-
-                 </p>
-              </div>
-               <div className='flex flex-row justify-between mt-2'>
-                <p className='mt-2'>₹ 14000   </p>
-                <button className='rounded-xl bg-green-300 p-2' >
-                  Buy now
-                </button>
-
-               </div>
-          
-
-          </div>
-          <div className='h-auto w-[250px] shadow-lg rounded-xl p-2'>
-               <div className='relative top-5 flex justify-between mb-4'>
-
-                 <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-                  10%
-                    
-                 </button>
-               <Heart className='cursor-pointer' />
-             
-
-               </div>
-              <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-              <div className='mt-2'>
-                 <p className='text-l text-zinc-400 font-bold'>
-                   Front load washing machine 
-
-                 </p>
-              </div>
-               <div className='flex flex-row justify-between mt-2'>
-                <p className='mt-2'>₹ 14000   </p>
-                <button className='rounded-xl bg-green-300 p-2' >
-                  Buy now
-                </button>
-
-               </div>
-          
-
-          </div>
-          <div className='h-auto w-[250px] shadow-lg rounded-xl p-2'>
-               <div className='relative top-5 flex justify-between mb-4'>
-
-                 <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-                  10%
-                    
-                 </button>
-               <Heart className='cursor-pointer' />
-             
-
-               </div>
-              <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-              <div className='mt-2'>
-                 <p className='text-l text-zinc-400 font-bold'>
-                   Front load washing machine 
-
-                 </p>
-              </div>
-               <div className='flex flex-row justify-between mt-2'>
-                <p className='mt-2'>₹ 14000   </p>
-                <button className='rounded-xl bg-green-300 p-2' >
-                  Buy now
-                </button>
-
-               </div>
-          
-
-          </div>
-          <div className='h-auto w-[250px] shadow-lg rounded-xl p-2'>
-               <div className='relative top-5 flex justify-between mb-4'>
-
-                 <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-                  10%
-                    
-                 </button>
-               <Heart className='cursor-pointer' />
-             
-
-               </div>
-              <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-              <div className='mt-2'>
-                 <p className='text-l text-zinc-400 font-bold'>
-                   Front load washing machine 
-
-                 </p>
-              </div>
-               <div className='flex flex-row justify-between mt-2'>
-                <p className='mt-2'>₹ 14000   </p>
-                <button className='rounded-xl bg-green-300 p-2' >
-                  Buy now
-                </button>
-
-               </div>
-          
-
-          </div>
-          <div className='h-auto w-[250px] shadow-lg rounded-xl p-2'>
-               <div className='relative top-5 flex justify-between mb-4'>
-
-                 <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-                  10%
-                    
-                 </button>
-               <Heart className='cursor-pointer' />
-             
-
-               </div>
-              <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-              <div className='mt-2'>
-                 <p className='text-l text-zinc-400 font-bold'>
-                   Front load washing machine 
-
-                 </p>
-              </div>
-               <div className='flex flex-row justify-between mt-2'>
-                <p className='mt-2'>₹ 14000   </p>
-                <button className='rounded-xl bg-green-300 p-2' >
-                  Buy now
-                </button>
-
-               </div>
-          
-
-          </div>
+              ))
+            }
+       
+    
         
 
           </div>
@@ -597,7 +499,7 @@ step={5}
   pageClassName={"page-item"}
   activeClassName={"active"}
   onPageChange={(event) => setPage(event.selected)}
-  pageCount={Math.ceil(data.length / n)}
+  pageCount={Math.ceil(dataitem.length / n)}
   breakLabel="..."
   previousLabel={
    
