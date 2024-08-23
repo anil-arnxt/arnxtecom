@@ -11,21 +11,50 @@ import ReactPaginate from "react-paginate";
 import { AiFillLeftCircle, AiFillRightCircle } from "react-icons/ai"; 
 import { IconContext } from "react-icons"; 
 import '@/pages/subcategory/subcategory.css'
+import axios from 'axios';
 
-const Subcategory = () => {
+const getsubcategorydataurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getsubcategoryitemarnxtecom'
 
+export async function getServerSideProps({ params }) {
+  const { subcategory } = params; 
+
+
+
+  const body = {
+    subcategory: subcategory,
+  };
+
+  const response = await axios.post(getsubcategorydataurl, body );
+  const dataitem = response.data;
+
+  return {
+    props: { dataitem },
+  };
+}
+
+const Subcategory = ({dataitem}) => {
   const [page, setPage] = useState(0);
 
-  const n = 3
   
-  const data = ['fadsf', 'fasfda', 'fasdfasdf', 'fasfdsa','fadsf', 'fasfda', 'fasdfasdf', 'fasfdsa']
+  const [productdata, setProductData] = useState()
+  const [filteritemarray, setFilterItemArray] = useState([])
+  const [currenttag, setCurrentTag] = useState(null)
+
+
+
+  useEffect(()=>{
+
+      setProductData(dataitem)
+
+  },[])
+
+  const n = 9
   
+
   
   const filterData = useMemo(() => {
-      return data.filter((item, index) => {
-          return (index >= page * n) & (index < (page + 1) * n);
-      })
-  }, [page])
+    return productdata?.slice(page * n, (page + 1) * n);
+  }, [page, productdata]);
   
       const [value, setValue] = useState([100, 60000]);
   
@@ -42,6 +71,124 @@ const Subcategory = () => {
 
       const router = useRouter()
       const { category } = router.query
+
+      const handleproductclick = (id)=>{
+
+        router.push(`/product/${id}`)
+          
+    
+        }
+
+        
+    useEffect(()=>{
+
+        let temparr = []
+     if(filteritemarray.length > 0){
+          
+           for(let item of dataitem){
+          
+               for (let coloritem of item.colors ){
+                 if(filteritemarray.includes(coloritem)){
+                     temparr = [...temparr, item]    
+                 }
+               }
+
+             
+
+             }
+
+          setProductData(temparr)
+         
+           
+     }
+     if(filteritemarray.length === 0){
+         setProductData(dataitem)
+     }
+
+ },[filteritemarray])
+
+ useEffect(()=>{
+
+    let temparray =[]
+
+      for ( let item of dataitem){
+          if(item.tags?.includes(currenttag)){
+            temparray.push(item)
+          }   
+      }
+
+    if(currenttag !== null){
+        setProductData(temparray)
+    }
+
+               
+
+},[currenttag])
+
+ const handlegetalldata = ()=>{
+    setProductData(dataitem)
+}
+
+const handleTagsSelect = (value)=>{
+    setCurrentTag(value)
+}
+
+const handlePriceSorting = (value)=>{
+
+    if(value === 'High to low'){
+     
+        const sortedProducts = [...productdata].sort((a, b) => parseFloat(b.offerprice) - parseFloat(a.offerprice));
+        setProductData(sortedProducts);
+     }
+    
+    if(value === 'Low to high'){
+     
+        const sortedProducts = [...productdata].sort((a, b) => parseFloat(a.offerprice) - parseFloat(b.offerprice));
+        setProductData(sortedProducts);
+    }
+}
+    
+
+const handlefilterchange = (e)=>{
+     
+
+    const body = e.target
+   
+    if(body.checked){
+          if(!filteritemarray.includes(body.value)){
+            setFilterItemArray([...filteritemarray, body.value])
+          }
+    }else{
+        if(filteritemarray.includes(body.value)){
+             const newarr = filteritemarray.filter(item=>{
+                return item !== body.value
+             })
+             setFilterItemArray(newarr)
+            
+        }
+    }
+}
+
+
+useEffect(()=>{
+
+    let temparr = []
+
+
+           if(productdata !== undefined){
+             
+            for(let item of dataitem ){
+                if(Number(item.offerprice) > Number(value[0]) && Number(item.offerprice) < Number(value[1])){
+                  temparr = [...temparr, item]
+  
+                }
+                 }
+  
+            setProductData(temparr)
+
+           }
+
+},[value])
   return (
     <div >
     <Navbar/>
@@ -273,11 +420,19 @@ step={5}
             <RangeSlider
     
     value={value}
- 
+   onInput= {setValue}
     min={100}
     max={60000}
     step={5}
   />
+     <div className="flex pt-2 pb-2 w-full">
+            <span>
+              From: <strong className="text-success">Rs: {value[0]}</strong>
+            </span>
+            <span className="ml-auto">
+              From: <strong className="text-success">Rs: {value[1]}</strong>
+            </span>
+          </div>
             </div>
 
   
@@ -295,41 +450,41 @@ step={5}
 
         </div>
         <div className='mt-2'>
-            <ul className='list-none flex flex-col gap-2'>
-                <li>
-                     <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
-                      <p>
-                        Red
-                      </p>
-                      <input type='checkbox'/>
-                     </div>
-                 </li>
-                 <li>
-                     <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
-                      <p>
-                       Green
-                      </p>
-                      <input type='checkbox'/>
-                     </div>
-                 </li>
-                 <li>
-                     <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
-                      <p>
-                       Blue
-                      </p>
-                      <input type='checkbox'/>
-                     </div>
-                 </li>
-                 <li>
-                     <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
-                      <p>
-                        White
-                      </p>
-                      <input type='checkbox'/>
-                     </div>
-                 </li>
-          
-                  </ul>
+        <ul className='list-none flex flex-col gap-2'>
+                    <li>
+                         <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
+                          <p>
+                            Red
+                          </p>
+                          <input type='checkbox' value={'red'} id='catcheckbox' onChange={handlefilterchange}/>
+                         </div>
+                     </li>
+                     <li>
+                         <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
+                          <p>
+                           Green
+                          </p>
+                          <input type='checkbox' value={'green'} id='catcheckbox' onChange={handlefilterchange}/>
+                         </div>
+                     </li>
+                     <li>
+                         <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
+                          <p>
+                           Blue
+                          </p>
+                          <input type='checkbox' value={'blue'} id='catcheckbox' onChange={handlefilterchange}/>
+                         </div>
+                     </li>
+                     <li>
+                         <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
+                          <p>
+                            White
+                          </p>
+                          <input type='checkbox' value={'white'} id='catcheckbox' onChange={handlefilterchange}/>
+                         </div>
+                     </li>
+              
+                      </ul>
 
         </div>
         
@@ -341,8 +496,12 @@ step={5}
 
       <div className='flex flex-row justify-between mt-2 '>
         <div className='flex ml-5'>
-            <p className='text-lg text-slate-400 font-bold'>All </p>
-            <p  className='text-lg text-slate-300 ml-1'>(135)</p>
+        <button className='border-2 rounded-lg  p-1' onClick={()=>handlegetalldata()}>
+                    All ({dataitem?.length})
+
+                </button>
+            {/* <p className='text-lg text-slate-400 font-bold'>All </p>
+            <p  className='text-lg text-slate-300 ml-1'>(135)</p> */}
              
 
         </div>
@@ -384,11 +543,14 @@ step={5}
                 <p className='text-md font-bold'>Show product: </p>
 
                 <div>
-                    <select className='rounded-xl border-2'>
-                        <option  >Popular</option>
+                <select className='rounded-xl border-2' onChange={(e)=>handleTagsSelect(e.target.value)}>
+                            <option selected disabled>Select</option>
                         <option  >New</option>
+                            <option>Latest</option>
+                            <option>Featured</option>
 
-                    </select>
+
+                        </select>
                 </div>
 
             </div>
@@ -397,11 +559,12 @@ step={5}
 <p className='text-md font-bold'>Sort By: </p>
 
 <div>
-<select className='rounded-xl border-2'>
-    <option  >Popular</option>
-    <option  >New</option>
+<select className='rounded-xl border-2' onChange={(e)=> handlePriceSorting(e.target.value)}>
+    <option selected disabled>Select</option>
+    <option  >High to low</option>
+    <option  >Low to high</option>
 
-</select>
+    </select>
 </div>
 
 </div>
@@ -411,174 +574,46 @@ step={5}
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-3 w-full gap-2 h-[600px] overflow-y-scroll no-scrollbar mt-10 place-items-center'>
-      <div className='h-auto w-[250px] shadow-lg rounded-xl p-2 '>
-           <div className='relative top-5 flex justify-between mb-4'>
+      {
+              filterData && filterData.map((product,index)=>(
 
-             <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-              10%
-                
-             </button>
-           <Heart className='cursor-pointer' />
-         
-
+                <div key={product.Id} className='h-auto w-[250px] shadow-lg rounded-xl p-2 '>
+                <div className='relative top-5 flex justify-between mb-4'>
+ 
+                  <button className='w-auto bg-red-300 rounded-3xl p-1 '>
+                   { Math.round( (Number(product.mrp) - Number(product.offerprice) )/ Number(product.mrp)*100)}%
+                     
+                  </button>
+                <Heart className='cursor-pointer' />
+              
+ 
+                </div>
+                 <div className='flex justify-center items-center w-full h-[250px] mt-5'>
+                     <img src={product.productmainimage} className='object-contain w-full h-full roundex-xl'/>
+                  </div>
+              
+               <div className='mt-2'>
+               <p className='text-l text-zinc-400 font-bold'>
+      {product.productname.length > 50 
+        ? `${product.productname.substring(0, 50)}...` 
+        : product.productname}
+    </p>
+               </div>
+                <div className='flex flex-row justify-between mt-2'>
+                  
+                 <p className='mt-2'>₹ {product.offerprice} `</p>
+                 <button className='rounded-xl bg-green-300 p-2'  onClick={()=>handleproductclick(product.Id)} >
+                   Buy now
+                 </button>
+ 
+                </div>
+           
+ 
            </div>
-          <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-          <div className='mt-2'>
-             <p className='text-l text-zinc-400 font-bold'>
-               Front load washing machine 
 
-             </p>
-          </div>
-           <div className='flex flex-row justify-between mt-2'>
-            <p className='mt-2'>₹ 14000   </p>
-            <button className='rounded-xl bg-green-300 p-2' >
-              Buy now
-            </button>
+              ))
+            }
 
-           </div>
-      
-
-      </div>
-      <div className='h-auto w-[250px] shadow-lg rounded-xl p-2'>
-           <div className='relative top-5 flex justify-between mb-4'>
-
-             <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-              10%
-                
-             </button>
-           <Heart className='cursor-pointer' />
-         
-
-           </div>
-          <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-          <div className='mt-2'>
-             <p className='text-l text-zinc-400 font-bold'>
-               Front load washing machine 
-
-             </p>
-          </div>
-           <div className='flex flex-row justify-between mt-2'>
-            <p className='mt-2'>₹ 14000   </p>
-            <button className='rounded-xl bg-green-300 p-2' >
-              Buy now
-            </button>
-
-           </div>
-      
-
-      </div>
-      <div className='h-auto w-[250px] shadow-lg rounded-xl p-2'>
-           <div className='relative top-5 flex justify-between mb-4'>
-
-             <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-              10%
-                
-             </button>
-           <Heart className='cursor-pointer' />
-         
-
-           </div>
-          <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-          <div className='mt-2'>
-             <p className='text-l text-zinc-400 font-bold'>
-               Front load washing machine 
-
-             </p>
-          </div>
-           <div className='flex flex-row justify-between mt-2'>
-            <p className='mt-2'>₹ 14000   </p>
-            <button className='rounded-xl bg-green-300 p-2' >
-              Buy now
-            </button>
-
-           </div>
-      
-
-      </div>
-      <div className='h-auto w-[250px] shadow-lg rounded-xl p-2'>
-           <div className='relative top-5 flex justify-between mb-4'>
-
-             <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-              10%
-                
-             </button>
-           <Heart className='cursor-pointer' />
-         
-
-           </div>
-          <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-          <div className='mt-2'>
-             <p className='text-l text-zinc-400 font-bold'>
-               Front load washing machine 
-
-             </p>
-          </div>
-           <div className='flex flex-row justify-between mt-2'>
-            <p className='mt-2'>₹ 14000   </p>
-            <button className='rounded-xl bg-green-300 p-2' >
-              Buy now
-            </button>
-
-           </div>
-      
-
-      </div>
-      <div className='h-auto w-[250px] shadow-lg rounded-xl p-2'>
-           <div className='relative top-5 flex justify-between mb-4'>
-
-             <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-              10%
-                
-             </button>
-           <Heart className='cursor-pointer' />
-         
-
-           </div>
-          <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-          <div className='mt-2'>
-             <p className='text-l text-zinc-400 font-bold'>
-               Front load washing machine 
-
-             </p>
-          </div>
-           <div className='flex flex-row justify-between mt-2'>
-            <p className='mt-2'>₹ 14000   </p>
-            <button className='rounded-xl bg-green-300 p-2' >
-              Buy now
-            </button>
-
-           </div>
-      
-
-      </div>
-      <div className='h-auto w-[250px] shadow-lg rounded-xl p-2'>
-           <div className='relative top-5 flex justify-between mb-4'>
-
-             <button className='w-auto bg-red-300 rounded-3xl p-1 '>
-              10%
-                
-             </button>
-           <Heart className='cursor-pointer' />
-         
-
-           </div>
-          <Image src='/images/washingmachine.png'className='rounded-xl' width={250} height={900}/>  
-          <div className='mt-2'>
-             <p className='text-l text-zinc-400 font-bold'>
-               Front load washing machine 
-
-             </p>
-          </div>
-           <div className='flex flex-row justify-between mt-2'>
-            <p className='mt-2'>₹ 14000   </p>
-            <button className='rounded-xl bg-green-300 p-2' >
-              Buy now
-            </button>
-
-           </div>
-      
-
-      </div>
     
 
       </div>
@@ -599,7 +634,7 @@ containerClassName={"pagination"}
 pageClassName={"page-item"}
 activeClassName={"active"}
 onPageChange={(event) => setPage(event.selected)}
-pageCount={Math.ceil(data.length / n)}
+pageCount={Math.ceil(filterData?.length / n)}
 breakLabel="..."
 previousLabel={
 

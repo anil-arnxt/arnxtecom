@@ -10,7 +10,7 @@ const getsingleproducturl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws
 
 
 
-export async function getStaticProps({ params }) {
+export async function getServerSideProps({ params }) {
   const { pid } = params; 
 
   const body = {
@@ -25,19 +25,19 @@ export async function getStaticProps({ params }) {
   };
 }
 
-export async function getStaticPaths() {
+// export async function getStaticPaths() {
 
 
-  return {
-    paths: [],
-    fallback: 'blocking', 
-  };
-}
+//   return {
+//     paths: [],
+//     fallback: 'blocking', 
+//   };
+// }
 
 const Product = ({dataitem}) => {
 
  
-        console.log(dataitem)
+      
 
         const [currentproductdetails, setCurrentProductDetails] = useState(dataitem['features'])
 

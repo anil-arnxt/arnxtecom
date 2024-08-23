@@ -32,7 +32,7 @@ const Navbar = () => {
         'Refrigerator',
         'Microwave',
         'TV',
-        'Washing Machine'
+        'Washing machine'
        
     ]
     const categorydatafurnishing = [
@@ -44,9 +44,7 @@ const Navbar = () => {
     const categorydatawalls = [
         'Wallpapers',
         'Wallmurals',
-       
-       
-    ]
+       ]
 
 
 

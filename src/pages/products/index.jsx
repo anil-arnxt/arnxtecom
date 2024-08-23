@@ -31,24 +31,29 @@ export async function getStaticProps() {
 
 const index = ({dataitem}) => {
 
-   
-
     const [page, setPage] = useState(0);
 
-const n = 3
+    const [productdata, setProductData] = useState()
+    const [filteritemarray, setFilterItemArray] = useState([])
 
-const data = ['fadsf', 'fasfda', 'fasdfasdf', 'fasfdsa','fadsf', 'fasfda', 'fasdfasdf', 'fasfdsa']
 
+    useEffect(()=>{
+
+        setProductData(dataitem)
+
+    },[])
+
+const n = 9
 
 const filterData = useMemo(() => {
-    return dataitem.filter((item, index) => {
-        return (index >= page * n) & (index < (page + 1) * n);
-    })
-}, [page])
+    return productdata?.slice(page * n, (page + 1) * n);
+  }, [page, productdata]);
 
 const router = useRouter()
 
     const [value, setValue] = useState([100, 60000]);
+
+    const [currenttag, setCurrentTag] = useState(null)
 
     const [isOpen, setIsOpen] = useState(false);
     const [dropdown, setDropDown] = useState(false)
@@ -56,6 +61,10 @@ const router = useRouter()
     const toggleFilter = () => {
       setIsOpen(!isOpen);
     };
+
+    const handleTagsSelect = (value)=>{
+        setCurrentTag(value)
+    }
 
     const handledropdowntoggle = () =>{
         setDropDown(!dropdown)
@@ -67,6 +76,138 @@ const router = useRouter()
       
 
     }
+
+
+    useEffect(()=>{
+
+        let temparray =[]
+
+          for ( let item of dataitem){
+              if(item.tags?.includes(currenttag)){
+                temparray.push(item)
+              }   
+          }
+
+        if(currenttag !== null){
+            setProductData(temparray)
+        }
+
+                   
+
+    },[currenttag])
+
+    const handlegetalldata = ()=>{
+        setProductData(dataitem)
+    }
+
+    const handlePriceSorting = (value)=>{
+
+        if(value === 'High to low'){
+         
+            const sortedProducts = [...productdata].sort((a, b) => parseFloat(b.offerprice) - parseFloat(a.offerprice));
+            setProductData(sortedProducts);
+         }
+        
+        if(value === 'Low to high'){
+         
+            const sortedProducts = [...productdata].sort((a, b) => parseFloat(a.offerprice) - parseFloat(b.offerprice));
+            setProductData(sortedProducts);
+        }
+    }
+
+
+    const handlefilterchange = (e)=>{
+     
+
+        const body = e.target
+       
+        if(body.checked){
+              if(!filteritemarray.includes(body.value)){
+                setFilterItemArray([...filteritemarray, body.value])
+              }
+        }else{
+            if(filteritemarray.includes(body.value)){
+                 const newarr = filteritemarray.filter(item=>{
+                    return item !== body.value
+                 })
+                 setFilterItemArray(newarr)
+                
+            }
+        }
+    }
+
+  
+
+    useEffect(()=>{
+
+           let temparr = []
+        if(filteritemarray.length > 0){
+             
+              for(let item of dataitem){
+                 if(filteritemarray.includes(item.category) ){
+                  temparr = [...temparr, item]  
+
+                   
+                 }
+                  for (let coloritem of item.colors ){
+                    if(filteritemarray.includes(coloritem)){
+                        temparr = [...temparr, item]    
+                    }
+                  }
+
+                
+
+                }
+
+             setProductData(temparr)
+            
+              
+        }
+        if(filteritemarray.length === 0){
+            setProductData(dataitem)
+        }
+
+    },[filteritemarray])
+
+    console.log(productdata)
+
+
+    useEffect(()=>{
+
+        let temparr = []
+
+    
+               console.log(value[0])
+               console.log(value[1])
+
+               if(productdata !== undefined){
+                 
+                for(let item of dataitem ){
+                    if(Number(item.offerprice) > Number(value[0]) && Number(item.offerprice) < Number(value[1])){
+                      temparr = [...temparr, item]
+      
+                    }
+      
+                }
+      
+                setProductData(temparr)
+
+               }
+
+             
+
+               
+           
+      
+
+    },[value])
+
+
+    
+
+  
+   
+  
   return (
 
     <div >
@@ -254,31 +395,31 @@ step={5}
                           <p>
                             Furniture
                           </p>
-                          <input type='checkbox'/>
+                          <input type='checkbox' value={'Furniture'} id='catcheckbox' onChange={handlefilterchange}/>
                          </div>
                      </li>
                      <li>
                          <div className='inline-flex hover:border-gray-400 border-2 w-full rounded-xl justify-between p-2'>
                           <p>
-                           Electical
+                           Electricals
                           </p>
-                          <input type='checkbox'/>
+                          <input type='checkbox' value={'Electrical'} id='catcheckbox' onChange={handlefilterchange}/>
                          </div>
                      </li>
                      <li>
                          <div className='inline-flex hover:border-gray-400 border-2 w-full rounded-xl justify-between p-2'>
                           <p>
-                           Rugs
+                           Electronics
                           </p>
-                          <input type='checkbox'/>
+                          <input type='checkbox' value={'Electronics'} id='catcheckbox' onChange={handlefilterchange}/>
                          </div>
                      </li>
                      <li>
                          <div className='inline-flex hover:border-gray-400 border-2 w-full rounded-xl justify-between p-2'>
                           <p>
-                            Wallpapers
+                            Walls
                           </p>
-                          <input type='checkbox'/>
+                          <input type='checkbox' value={'Wallpaper'} id='catcheckbox' onChange={handlefilterchange}/>
                          </div>
                      </li>
               
@@ -295,15 +436,24 @@ step={5}
 
                 </p>
 
-                <div className='mt-5'>
+                <div className='mt-5 '>
                 <RangeSlider
-        
+      
         value={value}
-     
+        onInput = {setValue}
         min={100}
         max={60000}
         step={5}
+    
       />
+          <div className="flex pt-2 pb-2 w-full">
+            <span>
+              From: <strong className="text-success">Rs: {value[0]}</strong>
+            </span>
+            <span className="ml-auto">
+              From: <strong className="text-success">Rs: {value[1]}</strong>
+            </span>
+          </div>
                 </div>
 
       
@@ -327,7 +477,7 @@ step={5}
                           <p>
                             Red
                           </p>
-                          <input type='checkbox'/>
+                          <input type='checkbox' value={'red'} id='catcheckbox' onChange={handlefilterchange}/>
                          </div>
                      </li>
                      <li>
@@ -335,7 +485,7 @@ step={5}
                           <p>
                            Green
                           </p>
-                          <input type='checkbox'/>
+                          <input type='checkbox' value={'green'} id='catcheckbox' onChange={handlefilterchange}/>
                          </div>
                      </li>
                      <li>
@@ -343,7 +493,7 @@ step={5}
                           <p>
                            Blue
                           </p>
-                          <input type='checkbox'/>
+                          <input type='checkbox' value={'blue'} id='catcheckbox' onChange={handlefilterchange}/>
                          </div>
                      </li>
                      <li>
@@ -351,7 +501,7 @@ step={5}
                           <p>
                             White
                           </p>
-                          <input type='checkbox'/>
+                          <input type='checkbox' value={'white'} id='catcheckbox' onChange={handlefilterchange}/>
                          </div>
                      </li>
               
@@ -367,8 +517,12 @@ step={5}
 
           <div className='flex flex-row justify-between mt-2 '>
             <div className='flex ml-5'>
-                <p className='text-lg text-slate-400 font-bold'>All </p>
-                <p  className='text-lg text-slate-300 ml-1'>(135)</p>
+                <button className='border-2 rounded-lg  p-1' onClick={()=>handlegetalldata()}>
+                    All ({dataitem?.length})
+
+                </button>
+                {/* <p className='text-lg text-slate-400 font-bold'>All </p>
+                <p  className='text-lg text-slate-300 ml-1'>(135)</p> */}
                  
 
             </div>
@@ -384,8 +538,10 @@ step={5}
 
                     <p>Show Product: </p>
                     <select className='rounded-xl border-2'>
-                            <option  >Popular</option>
+                          
                             <option  >New</option>
+                            <option>Latest</option>
+                            <option>Featured</option>
 
                         </select>
 
@@ -394,8 +550,8 @@ step={5}
 
 <p>Sort By: </p>
 <select className='rounded-xl border-2'>
-        <option  >Popular</option>
-        <option  >New</option>
+        <option  >High to low</option>
+        <option  >Low to high</option>
 
     </select>
 
@@ -410,9 +566,12 @@ step={5}
                     <p className='text-md font-bold'>Show product: </p>
 
                     <div>
-                        <select className='rounded-xl border-2'>
-                            <option  >Popular</option>
-                            <option  >New</option>
+                        <select className='rounded-xl border-2' onChange={(e)=>handleTagsSelect(e.target.value)}>
+                            <option selected disabled>Select</option>
+                        <option  >New</option>
+                            <option>Latest</option>
+                            <option>Featured</option>
+
 
                         </select>
                     </div>
@@ -423,9 +582,10 @@ step={5}
 <p className='text-md font-bold'>Sort By: </p>
 
 <div>
-    <select className='rounded-xl border-2'>
-        <option  >Popular</option>
-        <option  >New</option>
+    <select className='rounded-xl border-2' onChange={(e)=> handlePriceSorting(e.target.value)}>
+    <option selected disabled>Select</option>
+    <option  >High to low</option>
+    <option  >Low to high</option>
 
     </select>
 </div>
@@ -439,7 +599,7 @@ step={5}
           <div className='grid grid-cols-1 md:grid-cols-3 w-full gap-2 h-[600px] overflow-y-scroll no-scrollbar mt-10 place-items-center'>
 
             {
-              dataitem && dataitem.map((product,index)=>(
+              filterData && filterData.map((product,index)=>(
       
                 <div className='h-auto w-[250px] shadow-lg rounded-xl p-2 '>
                 <div className='relative top-5 flex justify-between mb-4'>
