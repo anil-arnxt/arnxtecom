@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import toast, { Toaster } from "react-hot-toast"; // Import React Hot Toast
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -8,7 +9,7 @@ const Index = () => {
     email: "",
     password: "",
   });
-  const [alertMessage, setAlertMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // isLoading for button
 
   const handleChange = (e) => {
     setFormFields({
@@ -19,58 +20,55 @@ const Index = () => {
 
   const signIn = async (e) => {
     e.preventDefault();
-    console.log(formFields);
 
+    if (formFields.email === "" || formFields.password === "") {
+      toast.error("Please fill all the fields");
+      return;
+    }
+
+    setIsLoading(true); // Set loading to true on form submit
     try {
-      if (formFields.email === "" || formFields.password === "") {
-        setAlertMessage("Fill all the fields");
-        return;
-      }
-
       const res = await axios.post(
-        `https://eozoyxa2xl.execute-api.ap-south-1.amazonaws.com/prod/register`,
+        `https://eozoyxa2xl.execute-api.ap-south-1.amazonaws.com/prod/login_arnxtecom`,
         formFields
       );
 
       const token = res.data.token;
       if (!token) {
-        setAlertMessage("Invalid Credentials");
+        toast.error("Invalid Credentials");
       } else {
-        verifyToken(token, res.data.role);
+        verifyToken(token);
       }
     } catch (error) {
+      toast.error("An error occurred during login");
       console.error(error);
+    } finally {
+      setIsLoading(false); // Reset loading state after submission
     }
   };
 
-  const verifyToken = async (token, role) => {
+  const verifyToken = async (token) => {
     try {
       const userInfo = {
         email: formFields.email,
         token: token,
-        role: role,
       };
 
       const res = await axios.post(
-        "https://eozoyxa2xl.execute-api.ap-south-1.amazonaws.com/prod/newsubmit",
+        "https://eozoyxa2xl.execute-api.ap-south-1.amazonaws.com/prod/login-arnxt-submit",
         userInfo
       );
 
-      if (res.data.message === "Verified" && res.data.item === undefined) {
+      if (res.data.message === "Verified") {
         sessionStorage.setItem("token", token);
-        sessionStorage.setItem("email", userInfo.email);
+        sessionStorage.setItem("email", formFields.email);
         sessionStorage.setItem("isLogin", true);
-      }
-
-      if (res.data.message === "Verified" && res.data.item === "admin") {
-        sessionStorage.setItem("token", token);
-        sessionStorage.setItem("email", userInfo.email);
-        sessionStorage.setItem("isLogin", true);
-        window.location.href = "/dashboard";
+        toast.success("Login successful");
       } else {
-        console.log("Invalid credentials");
+        toast.error("Invalid Credentials");
       }
     } catch (error) {
+      toast.error("Verification failed");
       console.error(error);
     }
   };
@@ -78,6 +76,7 @@ const Index = () => {
   return (
     <div>
       <Navbar />
+      <Toaster /> {/* Toast notification container */}
       <div className="container mx-auto">
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -115,20 +114,11 @@ const Index = () => {
               </div>
 
               <div>
-                <div className="flex items-center justify-between">
-                  <label
-                    htmlFor="password"
-                    className="block text-sm font-medium leading-6 text-gray-900">
-                    Password
-                  </label>
-                  <div className="text-sm">
-                    <a
-                      href="#"
-                      className="font-semibold text-indigo-600 hover:text-indigo-500">
-                      Forgot password?
-                    </a>
-                  </div>
-                </div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium leading-6 text-gray-900">
+                  Password
+                </label>
                 <div className="mt-2">
                   <input
                     id="password"
@@ -143,15 +133,15 @@ const Index = () => {
                 </div>
               </div>
 
-              {alertMessage && (
-                <p className="text-red-600 text-sm">{alertMessage}</p>
-              )}
-
               <div>
                 <button
                   type="submit"
-                  className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
-                  Sign in
+                  disabled={isLoading} // Disable button while loading
+                  className={`flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
+                    isLoading ? "opacity-50 cursor-not-allowed" : ""
+                  }`}>
+                  {isLoading ? "Signing in..." : "Sign in"}{" "}
+                  {/* Loading indicator */}
                 </button>
               </div>
             </form>
