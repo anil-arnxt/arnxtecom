@@ -9,7 +9,7 @@ const Index = () => {
     email: "",
     password: "",
   });
-  const [isLoading, setIsLoading] = useState(false); // isLoading for button
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormFields({
@@ -26,7 +26,7 @@ const Index = () => {
       return;
     }
 
-    setIsLoading(true); // Set loading to true on form submit
+    setIsLoading(true);
     try {
       const res = await axios.post(
         `https://eozoyxa2xl.execute-api.ap-south-1.amazonaws.com/prod/login_arnxtecom`,
@@ -43,7 +43,7 @@ const Index = () => {
       toast.error("An error occurred during login");
       console.error(error);
     } finally {
-      setIsLoading(false); // Reset loading state after submission
+      setIsLoading(false);
     }
   };
 
@@ -136,7 +136,7 @@ const Index = () => {
               <div>
                 <button
                   type="submit"
-                  disabled={isLoading} // Disable button while loading
+                  disabled={isLoading}
                   className={`flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 ${
                     isLoading ? "opacity-50 cursor-not-allowed" : ""
                   }`}>
