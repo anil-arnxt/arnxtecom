@@ -1,16 +1,48 @@
 
-import { Menu, X } from 'lucide-react'
+import { Heart, LogIn, LogOut, Menu, User, X } from 'lucide-react'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 import '@/pages/components/navbar.css'
 import { useRouter } from 'next/router'
+import { Ecomcontext, useAppContext } from '@/context/Context'
+import axios from 'axios'
 
+
+const getcartitemsurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getcartitemsarnxtecom'
  
-
 
 const Navbar = () => {
 
+  
+        const {cartdata, setCartData, fetchwishlist, setFetchWishlist} = useAppContext()
+
+       
+          const [cartitems, setCartItems] = useState()
+
+       
+
+        useEffect(() => {
+
+  
+          const getdata = async () => {
+            try {
+              const email = sessionStorage.getItem('email');
+              const body = { Id: email };
+      
+              const res = await axios.post(getcartitemsurl, body);
+               setCartItems(res.data)
+             
+            
+      
+            } catch (error) {
+              console.log(error);
+            }
+          };
+      
+          getdata();
+      
+        }, []);
 
     const categorydatafurniture = [
         'Chair',
@@ -58,6 +90,9 @@ const Navbar = () => {
    const router = useRouter()
    const [isOpen, setIsOpen] = useState(false);
    const [mobilecategory, setMobileCategory] = useState(false)
+   const [email , setEmail] = useState()
+
+   
 
    const togglemobilecategory = ()=>{
       setMobileCategory(!mobilecategory)
@@ -81,9 +116,47 @@ const Navbar = () => {
 
       }
 
+      const handleLogin = ()=>{
+        router.push('/login')
+      }
+
+      const handleLogout = ()=>{
+         sessionStorage.removeItem('email')
+         sessionStorage.removeItem('isLogin')
+         sessionStorage.removeItem('token')
+         setEmail(null)
+
+         router.push('/')
+
+         
+
+      }
+      const handlewishlist = ()=>{
+
+      
+        router.push('/wishlist')
+      }
+
       const handleshowcategory = ()=>{
           document.querySelector('.categorylist').style.display = 'block'
       }
+
+    
+      useEffect(() => {
+      
+        if (typeof window !== 'undefined') {
+          const storedEmail = sessionStorage.getItem('isLogin');
+            
+          if (storedEmail === null) {
+            setEmail(false);
+          }else{
+            setEmail(storedEmail)
+          }
+        }
+      }, [email]);
+
+      console.log(email)
+   
   return (
     <div className='sticky top-0 z-50 bg-white w-100 min-h-[80px] flex justify-between pl-5 pr-5 '>
 
@@ -188,7 +261,7 @@ const Navbar = () => {
                     </div>  
                 </div>
             </li>
-                    <li className="m-5"><Link href='/products'>Products</Link></li>
+                    {/* <li className="m-5"><Link href='/products'>Products</Link></li> */}
                 </ul>
             </div>
 
@@ -219,22 +292,64 @@ const Navbar = () => {
         style={{ width: '120px' }}
       />
     </div>
-                  
-
                  
-           
-
                 <Link href="/cart">
-                    <svg className="ml-5" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368">
+
+                <div className='relative'>
+                <svg className="ml-5" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368">
                         <path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z" />
                     </svg>
+
+                    {
+                      email ? <div className='absolute top-3 left-6 border-2 rounded-full bg-yellow-100'>
+                      <p>{cartitems && cartitems.length}</p>
+                      </div> : ''
+                    }
+                    
+
+                </div>
+                 
+                    
+                   
                 </Link>
 
-                <Link href="/login">
-                    <svg className="ml-5" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#5f6368">
-                        <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z" />
-                    </svg>
-                </Link>
+                <div className="relative group">
+  <svg
+    className="ml-5 cursor-pointer"
+    xmlns="http://www.w3.org/2000/svg"
+    height="24px"
+    viewBox="0 -960 960 960"
+    width="24px"
+    fill="#5f6368"
+  >
+    <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Zm80-80h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z" />
+  </svg>
+
+  {
+    email ?
+
+   
+    <div className="hidden group-hover:flex flex-col w-100 absolute right-1 bg-white p-4 shadow-lg">
+    <ul>
+        <li> <div className='flex flex-row'> <User size={20} className='mt-2'/> <p className='text-sm cursor-pointer m-2'>Accounts</p></div></li>
+        <li> <div className='flex flex-row' onClick={()=> handlewishlist()}> <Heart size={20} className='mt-2'/> <p className='text-sm cursor-pointer m-2'>Wishlist</p></div></li>
+        <li> <div className='flex flex-row' onClick={()=>handleLogout()}> <LogOut size={20} className='mt-2'/> <p className='text-sm cursor-pointer m-2'>Logout</p></div></li>
+
+    </ul>
+  </div> :
+    <div className="hidden group-hover:flex flex-col w-100 absolute right-1 bg-white p-4 shadow-lg">
+    <ul>
+        <li > <div className='flex flex-row' onClick={()=> handleLogin()}> <LogIn size={20} className='mt-2'/> <p className='text-sm cursor-pointer m-2'>Login</p></div></li>
+     
+
+    </ul>
+  </div>
+  }
+
+
+</div>
+                 
+             
             </div>
 
             <div className="lg:hidden md:hidden flex flex-row justify-center  ">

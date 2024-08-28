@@ -3,8 +3,11 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast"; // Import React Hot Toast
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import {  useRouter } from "next/router";
 
 const Index = () => {
+
+  const router = useRouter()
   const [formFields, setFormFields] = useState({
     email: "",
     password: "",
@@ -26,7 +29,7 @@ const Index = () => {
       return;
     }
 
-    setIsLoading(true); // Set loading to true on form submit
+    setIsLoading(true); 
     try {
       const res = await axios.post(
         `https://eozoyxa2xl.execute-api.ap-south-1.amazonaws.com/prod/login_arnxtecom`,
@@ -43,7 +46,7 @@ const Index = () => {
       toast.error("An error occurred during login");
       console.error(error);
     } finally {
-      setIsLoading(false); // Reset loading state after submission
+      setIsLoading(false); 
     }
   };
 
@@ -64,6 +67,8 @@ const Index = () => {
         sessionStorage.setItem("email", formFields.email);
         sessionStorage.setItem("isLogin", true);
         toast.success("Login successful");
+        router.push('/')
+        
       } else {
         toast.error("Invalid Credentials");
       }

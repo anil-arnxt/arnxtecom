@@ -1,12 +1,19 @@
 import { useRouter } from 'next/router'
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import Image from 'next/image'
-import { Box, Boxes, Heart, MinusCircleIcon, PlusCircleIcon } from 'lucide-react'
+import { Box, Boxes, CodeSquare, Heart, MinusCircleIcon, PlusCircleIcon } from 'lucide-react'
 import axios from 'axios'
+import { ImageZoom } from 'react-responsive-image-zoom';
+import '@/pages/product/product.css'
+import { Ecomcontext, useAppContext } from '@/context/context'
+
+
 
 const getsingleproducturl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getsinglearnxtecomproduct'
+
+const addtocarturl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/addtocartarnxtecommerce'
 
 
 
@@ -36,20 +43,18 @@ export async function getServerSideProps({ params }) {
 
 const Product = ({dataitem}) => {
 
- 
-      
-
-        const [currentproductdetails, setCurrentProductDetails] = useState(dataitem['features'])
-
-
-        const handledetailsclick = (value)=>{
-              
-
-       
-
-        }
-
+        const {quantity , setQuantity} =   useAppContext()
         
+         const [currentimage, setCurrentImage] = useState(dataitem && dataitem.productmainimage)
+        const [currentproductdetails, setCurrentProductDetails] = useState(dataitem['features'])
+        const [activeindeximage, setActiveIndexImage] = useState(0)
+
+    const [tempquantity, setTempQuantity] = useState(0)
+
+     const handleimageclick = (value, index)=>{
+          setCurrentImage(value)
+          setActiveIndexImage(index)
+     }        
 
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -57,6 +62,62 @@ const Product = ({dataitem}) => {
       setActiveIndex(index);
       setCurrentProductDetails(dataitem[value])
     };
+
+    const handleincreaseitem = (id)=>{
+
+      if (quantity.length === 0) {
+        setQuantity([
+          {
+            Id: id,
+            quantity: 1,
+          },
+        ]);
+      } else {
+        const newarr = quantity.map((item) => {
+          if (item.Id === id) {
+           
+            return { ...item, quantity: item.quantity + 1 };
+          }
+          return item;
+        });
+    
+     
+        const itemExists = newarr.some(item => item.Id === id);
+    
+      
+        if (!itemExists) {
+          newarr.push({
+            Id: id,
+            quantity: 1,
+          });
+        }
+    
+        setQuantity(newarr);
+      }
+    }
+
+
+
+    const handledecreaseitem = (id)=>{
+
+      const newarr = quantity.map((item) => {
+        if (item.Id === id) {
+         
+          return { ...item,  quantity: item.quantity === 0 ? 0 : item.quantity - 1 };
+        }
+        return item;
+      });
+
+  
+      setQuantity(newarr);
+
+    }
+
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
   
     const items = [
       'Features',
@@ -67,6 +128,38 @@ const Product = ({dataitem}) => {
       'QualityPromise'
     ];
 
+
+
+    const handleAddToCart = async (id, quantity)=>{
+          
+             if(sessionStorage.getItem('isLogin')){
+
+                const email = sessionStorage.getItem('email')
+
+              const body = {
+                Id: email,
+                productid: id,
+                quantity: quantity
+              }
+              
+
+              try{
+
+                const res = await axios.post(addtocarturl, body)
+                console.log(res.data)
+
+              }catch(error){
+                console.log(error)
+              }
+                
+             }else{
+              
+             }
+
+    }
+
+
+
  
   return (
     <div>
@@ -74,19 +167,35 @@ const Product = ({dataitem}) => {
 
         <div className='container mx-auto p-4 md:p-10'>
   <div className='grid md:grid-cols-12 grid-cols-1'>
-    <div className='md:col-span-5 flex justify-center md:justify-start'>
-      <div className='grid grid-rows-12 w-full md:w-[500px] place-items-center'>
-        <div className='row-span-9 w-full flex justify-center'>
-          <Image src={dataitem && dataitem.productmainimage} width={400} height={400} className='w-full max-w-[400px]'/>
+    <div className='md:col-span-5 flex justify-center h-[500px] md:justify-start'>
+      <div className='grid grid-rows-12 w-full md:w-[500px] place-items-center '>
+        <div className='row-span-9 w-full h-full flex justify-center'>
+        {
+          isClient && 
+        
+        <ImageZoom
+      src={currentimage && currentimage}
+      defaultZoomFactor={1.5}
+      transition={0.5}
+      breakpoints={[
+        { maxWidth: 768, zoomFactor: 1.2 },
+        { maxWidth: 1024, zoomFactor: 1.4 }
+      ]}
+    
+    imgClassName='imageproduct'
+      debug={false}
+    />
+}
+          {/* <Image src={dataitem && dataitem.productmainimage} width={400} height={400} className='w-full max-w-[400px] object-contain'/> */}
         </div>
         <div className='row-span-3 w-full'>
-          <div className='p-2 grid grid-cols-4 gap-2 place-items-center'>
+          <div className='p-2 grid grid-cols-4 gap-2 place-items-center '>
 
             {
 
               dataitem && dataitem.productrestimage?.map((prod,index)=>(
-                <div className='border-2 p-2'>
-                <Image src={prod} width={200} height={200} className='w-full max-w-[100px]'/>
+                <div className={`p-2 cursor-pointer ${activeindeximage === index ? `border-2` : ''}`}   onClick={()=>handleimageclick(prod, index)}>
+                <Image src={prod} width={200} height={200} className='w-full max-w-[100px]  object-contain'/>
               </div>
               ))
             }
@@ -121,13 +230,29 @@ const Product = ({dataitem}) => {
         </div>
         <div className='mt-5'>
           <div className='flex flex-row justify-start items-center'>
-            <PlusCircleIcon className='cursor-pointer'/>
-            <input type='number' value={1} className='w-[60px] border-2 focus:outline-none mx-2 my-2 px-4 rounded-lg'/>
-            <MinusCircleIcon className='cursor-pointer'/>
+            <PlusCircleIcon className='cursor-pointer'  onClick={()=> handleincreaseitem(dataitem && dataitem.Id)} />
+
+                {
+                quantity.map(item=>(
+                    item.Id === dataitem.Id ? 
+                    <input type='number' value ={quantity.length === 0 ? 0 : item.quantity} className='w-[60px] border-2 focus:outline-none mx-2 my-2 px-4 rounded-lg'/> : 
+                   ''
+                ))
+              }
+         
+            <MinusCircleIcon className='cursor-pointer' onClick={()=> handledecreaseitem(dataitem && dataitem.Id)}/>
           </div>
         </div>
         <div className='mt-10 flex flex-row w-full md:w-[160px] justify-between items-center'>
-          <button className='rounded-xl bg-green-300 p-3'>Add to cart</button>
+
+        {
+                quantity.map(item=>(
+                    item.Id === dataitem.Id ? 
+                    <button className='rounded-xl bg-green-300 p-3' onClick={()=>handleAddToCart(item.Id, item.quantity)}>Add to cart</button> : 
+                   ''
+                ))
+              }
+         
           <Heart/>
         </div>
         <div className='mt-10 flex flex-row w-full md:w-[160px] items-center'>

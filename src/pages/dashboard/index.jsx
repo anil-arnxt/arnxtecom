@@ -364,11 +364,7 @@ const index = () => {
                       let imgurl = resnew[0];
 
                        temparray.push(imgurl)  
-
-               
-                       
-                   
-                     
+ 
                     }
                   })
                   .catch((err) => console.log(err));

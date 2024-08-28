@@ -12,8 +12,11 @@ import { IconContext } from "react-icons";
 import '@/pages/products/products.css'
 import axios from 'axios';
 import { useRouter } from 'next/router';
+import toast, { Toaster } from "react-hot-toast";
 
  const getproductsurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getarnxtecomproducts'
+
+ const addwishlistitemurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/addwishlistitemarnxtecom'
 export async function getStaticProps() {
 
 
@@ -204,6 +207,34 @@ const router = useRouter()
 
 
     
+  const handlewishlistadd = async (id)=>{
+
+          const email = sessionStorage.getItem('email')
+
+          
+          if(email === null){
+              toast.error('Please login first')
+              router.push('/login')
+          }
+
+          const body = {
+            Id: email,
+            productid: id
+          }
+
+          try {
+             const res= await axios.post(addwishlistitemurl, body)
+             if(res.status === 200){
+                toast.success('Product added')
+             }
+               
+          }catch(error){
+              
+             toast.error(error.response.data)
+          }
+
+  }
+
 
   
    
@@ -212,6 +243,7 @@ const router = useRouter()
 
     <div >
         <Navbar/>
+        <Toaster/>
 
         <div className='md:hidden  flex flex-col justify-center items-center'>
             <div className='flex flex-row gap-2 py-2' onClick={toggleFilter}>
@@ -608,7 +640,7 @@ step={5}
                    { Math.round( (Number(product.mrp) - Number(product.offerprice) )/ Number(product.mrp)*100)}%
                      
                   </button>
-                <Heart className='cursor-pointer' />
+                <Heart className='cursor-pointer' onClick={()=>handlewishlistadd(product.Id)} />
               
  
                 </div>
