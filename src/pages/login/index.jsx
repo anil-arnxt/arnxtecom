@@ -3,8 +3,11 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast"; // Import React Hot Toast
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import {  useRouter } from "next/router";
 
 const Index = () => {
+
+  const router = useRouter()
   const [formFields, setFormFields] = useState({
     email: "",
     password: "",
@@ -64,6 +67,8 @@ const Index = () => {
         sessionStorage.setItem("email", formFields.email);
         sessionStorage.setItem("isLogin", true);
         toast.success("Login successful");
+        router.push('/')
+        
       } else {
         toast.error("Invalid Credentials");
       }

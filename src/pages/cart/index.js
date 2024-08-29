@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { ArrowBigDown, ArrowBigUp, ArrowLeft, Delete, DeleteIcon, LucideDelete, Minus, MinusCircleIcon, Plus, PlusCircleIcon, ShoppingCart, Star, Truck } from 'lucide-react'
 import { useRouter } from 'next/router'
+import { Ecomcontext, useAppContext } from '@/context/context'
 
 const index = () => {
 
@@ -17,6 +18,54 @@ const index = () => {
   const handlecheckout = ()=>{
       router.push('/checkout')
   }
+
+  const {cartdata,setCartData, setSubTotal, subtotal} = useAppContext()
+
+
+
+  useEffect(()=>{
+
+    const total = cartdata && cartdata.reduce((accumulator, item) => {
+      return accumulator + item['product'].offerprice * item['quantity'];
+    }, 0);
+
+    setSubTotal(total)
+
+ 
+
+  },[cartdata])
+
+  const handleincreaseitem = (id)=>{
+
+    const newarr = cartdata && cartdata.map((item) => {
+      if (item['product'].Id === id) {
+       
+        return { ...item, quantity: item.quantity + 1 };
+      }
+      return item;
+    });
+
+
+    setCartData(newarr);
+  
+}
+
+const handledecreaseitem = (id)=>{
+
+  const newarr = cartdata && cartdata.map((item) => {
+    if (item['product'].Id === id) {
+     
+      return { ...item,  quantity: item.quantity === 0 ? 0 : item.quantity - 1 };
+    }
+    return item;
+  });
+
+
+  setCartData(newarr);
+
+}
+
+
 
  
   return (
@@ -53,18 +102,22 @@ const index = () => {
                       </tr>
                     </thead>
                     <tbody>
-                        <tr  className='border-2 border-teal-300 '  >
+                      {
+                        cartdata && cartdata.map((product,index)=>(
+
+                          <tr  className='border-2 border-teal-300 '  >
                           <td className='flex justify-left items-left pt-10 pb-10'>
                             <div className='inline-flex flex-row  '>
 
-                               <Image src= '/images/washingmachine.png' width={200} height={200} className='w-full max-w-[100px]' />    
+                               <Image src= {product['product'].productmainimage} width={200} height={200} className='w-full max-w-[100px]' />    
 
                                <div className='flex flex-col mx-5'>
-                               <p className='w-auto text-3xl font-bold text-zinc-400 '>
-                                Nilkama sofa
+                               <p className='w-auto text-md font-bold text-zinc-400 '>
+
+                                 {product['product'].productname.toUpperCase()}
                               </p>
                               <p  className='text-sm mt-10'>
-                              14*15*63 (L*B*H)
+                              {`${product['product'].productlength}*${product['product'].productwidth}*${product['product'].productheight}`} (L*W*H)
                               </p>
 
                               <div className=' flex mt-2'> <Star size={15} /> <Star  size={15}/>  </div>
@@ -76,15 +129,15 @@ const index = () => {
                           </td>
                           <td>
                               <div className='flex flex-row justify-center items-center'>
-                                  <PlusCircleIcon className='cursor-pointer'/>
-                                 <input type='number' value={1} className='w-[60px] border-2 focus:outline-none mx-2 my-2 px-4 rounded-lg'/>
-                                   <MinusCircleIcon className='cursor-pointer'/>
+                                  <PlusCircleIcon className='cursor-pointer' onClick={()=>handleincreaseitem(product['product'].Id)} />
+                                 <input type='number' value={product['quantity']} className='w-[60px] border-2 focus:outline-none mx-2 my-2 px-4 rounded-lg'/>
+                                   <MinusCircleIcon className='cursor-pointer' onClick={()=>handledecreaseitem(product['product'].Id)}/>
                               </div>
                           </td>
                           <td>
                               <div className='flex justify-center items-center'>
                                 <p className='font-bold text-xl'>
-                                   ₹ 22000
+                                   ₹ {product['product'].offerprice * product['quantity']}
 
                                 </p>
                                  
@@ -99,37 +152,10 @@ const index = () => {
 
                         </tr>
 
-                        <tr  className='border-2 border-teal-300 '  >
-                          <td className='flex justify-left items-left pt-10 pb-10'>
-                            <div className='inline-flex flex-row  '>
+                        ))
+                      }
+                  
 
-                               <Image src= '/images/washingmachine.png' width={200} height={200} className='w-full max-w-[100px]' />    
-
-                               <div className='flex flex-col mx-5'>
-                               <p className='w-auto text-3xl font-bold text-zinc-400 '>
-                                Nilkama sofa new
-                              </p>
-                              <p  className='text-sm mt-10'>
-                              14*15*63 (L*B*H)
-                              </p>
-
-                              <div className=' flex mt-2'> <Star size={15} /> <Star  size={15}/> <Star  size={15}/> </div>
-
-                               </div>
-                            
-                            
-
-                            </div>
-                          </td>
-                          <td>
-                              <div className='flex flex-row justify-center items-center'>
-                                  <PlusCircleIcon className='cursor-pointer'/>
-                                 <input type='number' className='w-[60px] border-2 focus:outline-none mx-2 my-2'/>
-                                   <MinusCircleIcon className='cursor-pointer'/>
-                              </div>
-                          </td>
-
-                        </tr>
                     </tbody>
 
          </table>
@@ -143,7 +169,10 @@ const index = () => {
     <div className='flex flex-col sm:flex-row items-center mt-4 sm:mt-0'>
       <input placeholder='promocode' className='rounded-xl h-[40px] focus:outline-none border-2 pl-2 w-full sm:w-auto mb-4 sm:mb-0' />
       <div className='flex flex-col sm:ml-2 text-center sm:text-left'>
-        <p className='text-xl font-bold'>Subtotal ₹ 25000</p>
+        <p className='text-xl font-bold'>Subtotal ₹ {subtotal}
+          
+         
+        </p>
       </div>
       <button className='rounded-xl bg-green-300 p-5 ml-0 sm:ml-5 w-full sm:w-auto' onClick={handlecheckout}>
         CHECKOUT

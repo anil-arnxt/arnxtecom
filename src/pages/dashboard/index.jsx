@@ -2,6 +2,8 @@ import axios from 'axios'
 import { CircleX, Cross, ImageMinus } from 'lucide-react'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
+import Sidebar from '../components/Sidebar'
+import Rugsupload from '../components/dashboardcomponents/Rugsupload'
 
 const index = () => {
 
@@ -364,11 +366,7 @@ const index = () => {
                       let imgurl = resnew[0];
 
                        temparray.push(imgurl)  
-
-               
-                       
-                   
-                     
+ 
                     }
                   })
                   .catch((err) => console.log(err));
@@ -507,9 +505,18 @@ const index = () => {
         }
 
   return (
-    <div>
+    <div className='flex flex-col'>
+        <div>
+        <Sidebar/>
+        </div>
+        <div>
+        <Rugsupload/>
 
-         <div className='container mx-auto  border-2 mt-20 pb-10'>
+        </div>
+       
+
+
+         {/* <div className='container mx-auto  border-2 mt-20 pb-10'>
 
             <div className='grid grid-cols-5 w-full gap-2 place-items-center p-20'>
                 <div>
@@ -774,7 +781,7 @@ const index = () => {
                   <button className='border-2 rounded-xl bg-blue-300 p-3' onClick={()=>handlesubmit()}>Submit</button>
                </div>
 
-         </div>
+         </div> */}
 
       
     </div>
