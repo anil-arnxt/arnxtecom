@@ -28,7 +28,7 @@ export async function getStaticProps() {
 
 }
 
-
+const addwishlisturl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/addwishlistitemarnxtecom'
 const index = ({dataitem}) => {
 
     const [page, setPage] = useState(0);
@@ -194,16 +194,26 @@ const router = useRouter()
 
                }
 
-             
-
-               
-           
-      
-
     },[value])
 
 
-    
+   const handleAddWishlist = async (id)=>{
+
+    const email = sessionStorage.getItem('email')
+
+     const body ={
+        Id: email,
+        productid: id
+     }
+
+     try{
+        const res = await axios.post(addwishlisturl, body)
+        console.log(res.data)
+     }catch(error){
+        console.log(error)
+     }
+
+   } 
 
   
    
@@ -608,7 +618,7 @@ step={5}
                    { Math.round( (Number(product.mrp) - Number(product.offerprice) )/ Number(product.mrp)*100)}%
                      
                   </button>
-                <Heart className='cursor-pointer' />
+                <Heart className='cursor-pointer'  onClick={()=>handleAddWishlist(product.Id)} />
               
  
                 </div>
