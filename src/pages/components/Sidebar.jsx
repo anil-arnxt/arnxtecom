@@ -1,3 +1,5 @@
+
+import { useAppContext } from '@/context/Context'
 import { ChartColumn, ListOrdered, ShoppingBasket, TableOfContents, User } from 'lucide-react'
 import React, { useState } from 'react'
 
@@ -5,6 +7,10 @@ const Sidebar = () => {
 
     const [productisopen, setProductIsOpen] = useState(false)
     const [contentisopen, setContentIsOpen] = useState(false)
+    const [furnitureopen, setFurnitureOpen] = useState(false)
+    const {activeComponent, setActiveComponent} = useAppContext()
+
+    console.log(activeComponent)
 
 
     const handleshowproduct = ()=>{
@@ -12,6 +18,9 @@ const Sidebar = () => {
     }
     const handleshowcontent = ()=>{
         setContentIsOpen(!contentisopen)
+    }
+    const handleshowfurniture=()=>{
+      setFurnitureOpen(!furnitureopen)
     }
   return (
     <div className='fixed left-0 w-[200px] z-30 h-screen bg-gray-200'>
@@ -45,12 +54,29 @@ const Sidebar = () => {
             
               <ul 
                className={`flex flex-col ml-10 gap-2 mt-2 transition-all duration-300 ease-in-out transform origin-top overflow-hidden ${
-                 contentisopen ? 'max-h-40 scale-y-100 opacity-100' : 'max-h-0 scale-y-0 opacity-0'
+                 contentisopen ? 'max-h-full scale-y-100 opacity-100' : 'max-h-0 scale-y-0 opacity-0'
                }`}
              >
                   <li><p className='text-sm cursor-pointer'>Rugs upload</p></li>
                   <li><p  className='text-sm cursor-pointer'>Wallpaper upload</p></li>
-                  <li><p  className='text-sm cursor-pointer'>Furniture upload</p></li>
+                  <li><p  className='text-sm cursor-pointer' onClick={handleshowfurniture}>Furniture upload</p>
+                  {
+               
+               <ul 
+               className={`flex flex-col ml-5 gap-1  transition-all duration-300 ease-in-out transform origin-top overflow-hidden ${
+                 furnitureopen ? 'max-h-full scale-y-100 opacity-100' : 'max-h-0 scale-y-0 opacity-0'
+               }`}
+             >
+                <li><p className='text-xs cursor-pointer' onClick={()=> setActiveComponent('Sofa')}>Sofa</p></li>
+                <li><p  className='text-xs cursor-pointer' onClick={()=> setActiveComponent('Chair')}>Chair</p></li>
+                <li><p  className='text-xs cursor-pointer' onClick={()=> setActiveComponent('Wardrobe')}>Wardrobe</p></li>
+             
+               
+
+             </ul> 
+               }
+                  
+                  </li>
                   <li><p  className='text-sm cursor-pointer'>Electical upload</p></li>
                   <li><p  className='text-sm cursor-pointer'>Electronics upload</p></li>
 

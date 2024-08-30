@@ -4,6 +4,11 @@ import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import Rugsupload from '../components/dashboardcomponents/Rugsupload'
+import Sofa from '../components/dashboardcomponents/furnitures/Sofa'
+import Chair from '../components/dashboardcomponents/furnitures/Chair'
+import Wardrobe from '../components/dashboardcomponents/furnitures/Wardrobe'
+import { useAppContext } from '@/context/Context'
+
 
 const index = () => {
 
@@ -12,12 +17,15 @@ const index = () => {
     const uploadproducturl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/addproductarnxtecom'
 
     const [subcategorydata, setSubcategoryData] = useState()
+    const {activeComponent} = useAppContext()
 
 
     const [imagesmain, setImagesmain] = useState()
     const [imagesrest, setImagesRest] = useState([])
     const [glbfile, setGlbFile] = useState()
     const [usdzfile, setUsdzFile] = useState()
+
+    const [showfurnitureupload, setShowFurnitureUpload] = useState(false)
 
         const [productjson, setProductJson] = useState({
             productname :'',
@@ -99,8 +107,6 @@ const index = () => {
              const filarray =     newarray.filter(item=>{
                         return item !== value   
                   }) 
-
-                
 
             setProductJson({
                 ...productjson,
@@ -504,13 +510,31 @@ const index = () => {
 
         }
 
+        console.log(activeComponent)
+
+      const renderComponent = () => {
+            switch (activeComponent) {
+              case 'Rugsupload':
+                return <Rugsupload />;
+              case 'Sofa':
+                return <Sofa />;
+              case 'Chair':
+                return <Chair />;
+              case 'Wardrobe':
+                return <Wardrobe />;
+              default:
+                return <Rugsupload />;
+            }
+          };
+
   return (
     <div className='flex flex-col'>
         <div>
         <Sidebar/>
         </div>
         <div>
-        <Rugsupload/>
+           {renderComponent()}
+    
 
         </div>
        

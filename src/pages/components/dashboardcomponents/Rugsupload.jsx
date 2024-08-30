@@ -1,44 +1,86 @@
-import { CirclePlus, CircleX } from 'lucide-react'
+import { ArrowUpFromLine, CircleCheckBig, CirclePlus, CircleX } from 'lucide-react'
 import React, { useState } from 'react'
+import toast, { Toaster } from 'react-hot-toast'
 
 const Rugsupload = () => {
 
     const [productjson, setProductJson] = useState({
         productname :'',
-        brandname: '',
+         brand: '',
         sku: '',
-        productlength: '',
-        productwidth: '',
-        productheight: '',
-        dimensionunit: '',
-        mrp: '',
-        offerprice: '',
-        weight: '',
-        weightunit: '',
         category: '',
         subcategory: '',
+         productcategory  :  '',
          tags: [],
-         rooms: [],
          colors: [],
          sizeprice: [],
-         warranty: '',
-         features:'',
-         properties:'',
+         details:'',
          care:'',
-         warrantydetails:'',
-         returns: '',
-         qualitypromise: '',
-         productmainimage: '',
-         productrestimage: [],
+         designstory:'',
+         shippingdetails: '',
+         productimages: [],
          glbfile: '',
-         usdzfile: ''
-
-
+         usdzfile: '',
+         material: '',
+         design: '',
+         collection: '',
+         style: ''
 
     })
 
     const [currentsize, setCurrentSize] = useState('select')
-    const [currentprice, setCurrentPrice] = useState()
+    const [currentpricemrp, setCurrentPriceMrp] = useState()
+    const [currentpriceoffer, setCurrentPriceOffer] = useState()
+    const [glbfile, setGlbFile] = useState()
+    const [usdzfile, setUsdzFile] = useState()
+
+    const [images, setImages] = useState([])
+
+    const style= ['Modern', 'Transitional', 'Traditional']
+    const categoryproduct = [
+        "Oushak",
+        "Mid Century Modern",
+        "Persian",
+        "Hype Master",
+        "Trending, Loved & Liked",
+        "Geometrical",
+        "Abstract",
+        "Solid",
+        "Flatweave Modern",
+        "Flatweave Traditional",
+        "Naturals",
+        "Kids",
+        "Shaggy",
+        "Braids & Pebbles",
+        "Contemporary",
+        "Minimalist - Hand Carved",
+        "Minimalist",
+        "Shaped",
+        "Floral",
+        "Ultra Luxury"
+      ];
+      const collection = [
+        "Acar",
+        "Aurora",
+        "Clan",
+        "Cyanna",
+        "Far East",
+        "Kasbah",
+        "Savana",
+        "Vintage"
+      ];
+      const designs = [
+        "Abstract",
+        "Oriental and Traditional",
+        "Moroccan and Tribal",
+        "Vintage and Distressed",
+        "Floral and Tropical",
+        "Geometric and Stripes",
+        "Graphic and Art Deco",
+        "Solid",
+        "Patchwork"
+      ];
+     const  material = ["Wool", "Wool & Bamboo Silk", "Wool & Silk", "Silk", "Viscose", "Jute & Hemp", "Cotton", "Others"]
 
     const handleremoveitem = (name, value) =>{
 
@@ -47,8 +89,6 @@ const Rugsupload = () => {
    const filarray =     newarray.filter(item=>{
               return item !== value   
         }) 
-
-      
 
   setProductJson({
       ...productjson,
@@ -112,7 +152,8 @@ const handlepriceinput = (size, price)=>{
         setProductJson((prevState) => {
 
             const updatedprice =  [...prevState['sizeprice'], {
-                 price: currentprice,
+                 mrp: currentpricemrp,
+                 offerprice: currentpriceoffer,
                  size: currentsize
             }]; 
     
@@ -122,11 +163,8 @@ const handlepriceinput = (size, price)=>{
             };
         });
           setCurrentSize('select')
-        document.getElementById('currentpriceinput').value = '';
-
-    
-
-        
+        document.getElementById('currentpriceinputmrp').value = '';
+        document.getElementById('currentpriceinputoffer').value = '';
 
 }
 
@@ -160,8 +198,144 @@ const handlecolorsinput = (e)=>{
 
       
 }
+
+const fileToBase64 = (file, cb) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      cb(null, reader.result);
+    };
+    reader.onerror = function (error) {
+      cb(error, null);
+    };
+  };
+
+
+const handleimageselect = (e)=>{
+    let val = document.getElementById("imageinput").value;
+    let indx = val.lastIndexOf(".") + 1;
+    let filetype = val.substr(indx, val.length).toLowerCase();
+
+    if (filetype === "jpg" || filetype === "png" || filetype === "jpeg") {
+      let files = Array.from(e.target.files);
+      files.forEach((file) => {
+        fileToBase64(file, (err, result) => {
+          if (result) {
+           
+          }
+        });
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          if (reader.readyState === 2) {
+            setImages((oldArray) => [...oldArray, file]);
+           
+          }
+        };
+
+        reader.readAsDataURL(file);
+      });
+    } else {
+      
+      toast.error('File supported are jpeg,jpg,png')
+    }   
+}
+
+const handleremoveimage = (ind)=>{
+         
+    const newarr = images.filter((item,index)=>{
+        return   index !== ind
+    })
+
+    setImages(newarr)
+
+}
+
+const handleinputchange = (e)=>{
+    setProductJson({
+        ...productjson,
+        [e.target.name] : e.target.value
+    })
+    
+
+}
+
+const handleglbfile = (e)=>{
+    let val = document.getElementById("glbinput").value;
+            let indx = val.lastIndexOf(".") + 1;
+            let filetype = val.substr(indx, val.length).toLowerCase();
+        
+            if (filetype === "glb" ) {
+              let files = Array.from(e.target.files);
+              files.forEach((file) => {
+                fileToBase64(file, (err, result) => {
+                  if (result) {
+                    setGlbFile(file) 
+                    document.getElementById('glbfiletick').style.display = 'block'
+                  }
+                });
+        
+                const reader = new FileReader();
+        
+                reader.onload = () => {
+                  if (reader.readyState === 2) {
+              
+                   
+                  }
+                };
+        
+                reader.readAsDataURL(file);
+              });
+            } else {
+              
+            toast.error('Please select a glb file')
+            document.getElementById('glbfiletick').style.display = 'none'
+
+            }
+
+}
+
+const handleusdzfile = (e)=>{
+    let val = document.getElementById("usdzinput").value;
+            let indx = val.lastIndexOf(".") + 1;
+            let filetype = val.substr(indx, val.length).toLowerCase();
+        
+            if (filetype === "usdz" ) {
+              let files = Array.from(e.target.files);
+              files.forEach((file) => {
+                fileToBase64(file, (err, result) => {
+                  if (result) {
+                    setUsdzFile(file) 
+                    document.getElementById('usdzfiletick').style.display = 'block'
+                  }
+                });
+        
+                const reader = new FileReader();
+        
+                reader.onload = () => {
+                  if (reader.readyState === 2) {
+              
+                   
+                  }
+                };
+        
+                reader.readAsDataURL(file);
+              });
+            } else {
+              
+            toast.error('Please select a usdz file')
+            document.getElementById('usdzfiletick').style.display = 'none'
+
+            }
+
+}
+
+
+console.log(productjson)
   return (
     <div>
+        <Toaster/>
          <div className='w-full  h-12 border-2 rounded-xl bg-gray-200 top-0 sticky'>
 
               <div className='w-full h-full  flex flex-row justify-end items-center ' >
@@ -180,21 +354,21 @@ const handlecolorsinput = (e)=>{
                 <div className='container mx-auto   flex flex-col'>
                     <div className='w-100 p-2 flex flex-col justify-start items-start  gap-1 '>
                         <label className='text-md text-gray-500 font-normal'>Product name</label>
-                        <input className='w-full  border-2 rounded-xl outline-none pl-2'/>
+                        <input className='w-full  border-2 rounded-xl outline-none pl-2' name='productname'  onChange={handleinputchange}/>
                     </div>
 
                     <div className='w-full flex flex-row'>
                     <div className='w-100 p-2 flex flex-col justify-start items-start  gap-1 '>
                         <label className='text-md text-gray-500 font-normal'>Brand</label>
-                        <input className='w-full  border-2 rounded-xl outline-none pl-2'/>
+                        <input className='w-full  border-2 rounded-xl outline-none pl-2' name='brand'  onChange={handleinputchange} />
                     </div>
                     <div className='w-100 p-2 flex flex-col justify-start items-start  gap-1 '>
                         <label className='text-md text-gray-500 font-normal'>SKU</label>
-                        <input className='w-full  border-2 rounded-xl outline-none pl-2'/>
+                        <input className='w-full  border-2 rounded-xl outline-none pl-2' name='sku'  onChange={handleinputchange}/>
                     </div>
                     <div className='w-100 p-2 flex flex-col justify-start items-start  gap-1 '>
                         <label className='text-md text-gray-500 font-normal'>Vendor</label>
-                        <input className='w-full  border-2 rounded-xl outline-none pl-2'/>
+                        <input className='w-full  border-2 rounded-xl outline-none pl-2' name='vendor'  onChange={handleinputchange}/>
                     </div>
 
                     </div>
@@ -204,15 +378,30 @@ const handlecolorsinput = (e)=>{
 
                 <div className='w-full min-h-64  p-2  flex flex-col flex-wrap'>
                     <label className='text text-gray-500 font-bold m-2'>Media</label>
-                  <div className='flex flex-col w-full m-1 p-2 border-2 rounded-xl'>
-                    <img src='' alt='image' className='w-36 h-36 object-contain'/>
+                  <div className='flex flex-row w-full min-h-48 gap-1 overflow-scroll no-scrollbar m-1 p-2 border-2 rounded-xl'>
+                    {
+                         images?.map((img,index)=>(
+
+                            <div className='relative flex flex-row'>
+
+                             <img src= {URL.createObjectURL(img)} alt='image' className='w-36 h-36 object-contain'/>
+                             <CircleX className='absolute top-0 right-0 mr-5 cursor-pointer ' onClick={()=>handleremoveimage(index)}  />
+                                </div>
+
+                         
+
+                         ))
+
+                    }
                   </div>
                   <div className="relative m-2  w-fit">
   <input 
     type="file" 
     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-    id="fileInput"
+    id="imageinput"
     multiple
+    accept='images/*'
+    onChange={handleimageselect}
     
   />
   <button 
@@ -237,16 +426,54 @@ const handlecolorsinput = (e)=>{
   </button>
 </div>
  </div>
+
+  <div className='flex flex-row w-full justify-start items-start gap-2 ml-2 mt-2 mb-3'>
+
+
+
+    <div className='flex flex-col w-fit justify-center items-center gap-2 border-2 rounded-xl'>
+    <input 
+    type="file" 
+    className="absolute inset-0 w-fit h-fit opacity-0 cursor-pointer border-2"
+    id="glbinput"
+    onChange={handleglbfile}
+  
+  />
+  <button className='p-2 flex flex-row  '  onClick={() => document.getElementById('glbinput').click()}><ArrowUpFromLine/>Upload glb</button>
+    </div>
+    <div id= 'glbfiletick' className='hidden ml-1 flex justify-center items-center mt-2'>
+    <CircleCheckBig color='green'/>
+    </div>
+  
+    <div className='flex flex-col w-fit justify-center items-center gap-2 border-2 rounded-xl'>
+    <input 
+    type="file" 
+    className="absolute inset-0 w-fit h-fit opacity-0 cursor-pointer border-2"
+    id="usdzinput"
+    onChange={handleusdzfile}
+  
+  />
+  <button className='p-2 flex flex-row  '  onClick={() => document.getElementById('usdzinput').click()}><ArrowUpFromLine/>Upload usdz</button>
+
+    </div>
+    <div id= 'usdzfiletick' className='hidden ml-1 flex justify-center items-center mt-2'>
+    <CircleCheckBig color='green' />
+    </div>
+
+
+  </div>
  <div className='w-full flex flex-row'>
                     <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
                         <label className='text-md text-gray-500 font-normal'>Category</label>
-                        <select className='w-full  border-2 rounded-xl outline-none p-2'>
+                        <select className='w-full  border-2 rounded-xl outline-none p-2' name='productcategory' onChange={handleinputchange} >
                             <option disabled selected>select</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
+                            {
+                                categoryproduct.map(item=>(
+
+                                    <option>{item}</option>
+                                ))
+                            }
+                        
 
 
                         </select>
@@ -254,13 +481,15 @@ const handlecolorsinput = (e)=>{
                     </div>
                     <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
                         <label className='text-md text-gray-500 font-normal'>Style</label>
-                        <select className='w-full  border-2 rounded-xl outline-none p-2'>
+                        <select className='w-full  border-2 rounded-xl outline-none p-2' name = 'style' onChange={handleinputchange}>
                             <option disabled selected>select</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
+
+                            {
+                                style.map(item=>(
+                                  <option>{item}</option>
+                                ))
+                            }
+                       
 
 
                         </select>
@@ -268,13 +497,15 @@ const handlecolorsinput = (e)=>{
                     </div>
                     <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
                         <label className='text-md text-gray-500 font-normal'>Design</label>
-                        <select className='w-full  border-2 rounded-xl outline-none p-2'>
+                        <select className='w-full  border-2 rounded-xl outline-none p-2' name='design' onChange={handleinputchange}>
                             <option disabled selected>select</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
+                            {
+                                designs.map(item=>(
+
+                                    <option>{item}</option>
+                                ))
+                            }
+                        
 
 
                         </select>
@@ -282,13 +513,15 @@ const handlecolorsinput = (e)=>{
                     </div>
                     <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
                         <label className='text-md text-gray-500 font-normal'>Collection</label>
-                        <select className='w-full  border-2 rounded-xl outline-none p-2'>
+                        <select className='w-full  border-2 rounded-xl outline-none p-2' name='collection' onChange={handleinputchange}>
                             <option disabled selected>select</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
+                            {
+                                collection.map(item=>(
+
+                                    <option>{item}</option>
+                                ))
+                            }
+                        
 
 
                         </select>
@@ -296,14 +529,15 @@ const handlecolorsinput = (e)=>{
                     </div>
                     <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
                         <label className='text-md text-gray-500 font-normal'>Material</label>
-                        <select className='w-full  border-2 rounded-xl outline-none p-2'>
+                        <select className='w-full  border-2 rounded-xl outline-none p-2' name='material' onChange={handleinputchange}>
                             <option disabled selected>select</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
-                            <option>fafad</option>
+                            {
+                                material.map(item=>(
 
+                                    <option>{item}</option>
+                                ))
+                            }
+                        
 
                         </select>
                         
@@ -316,25 +550,25 @@ const handlecolorsinput = (e)=>{
                     <div className='container mx-auto min-h-16 mt-2 p-1 flex flex-col'>
                     <label className='text text-gray-500 font-bold m-2'>Details</label>
                   <div className='flex flex-col w-full min-h-24 border-2 p-2 rounded-lg'>
-                      <textarea className='w-full  min-h-24 pl-2 outline-none'/>
+                      <textarea className='w-full  min-h-24 pl-2 outline-none' name='details' onChange={handleinputchange} />
                   </div>
                   </div>
                   <div className='container mx-auto min-h-16 mt-2 p-1 flex flex-col'>
                     <label className='text text-gray-500 font-bold m-2'>Care</label>
                   <div className='flex flex-col w-full min-h-24 border-2 p-2 rounded-lg'>
-                      <textarea className='w-full  min-h-24 pl-2 outline-none'/>
+                      <textarea className='w-full  min-h-24 pl-2 outline-none' name='care' onChange={handleinputchange}/>
                   </div>
                   </div>
                   <div className='container mx-auto min-h-16 mt-2 p-1 flex flex-col'>
                     <label className='text text-gray-500 font-bold m-2'>Design story</label>
                   <div className='flex flex-col w-full min-h-24 border-2 p-2 rounded-lg'>
-                      <textarea className='w-full  min-h-24 pl-2 outline-none'/>
+                      <textarea className='w-full  min-h-24 pl-2 outline-none' name='designstory' onChange={handleinputchange}/>
                   </div>
                   </div>
                   <div className='container mx-auto min-h-16 mt-2 p-1 flex flex-col'>
                     <label className='text text-gray-500 font-bold m-2'>Shipping details</label>
                   <div className='flex flex-col w-full min-h-24 border-2 p-2 rounded-lg'>
-                      <textarea className='w-full  min-h-24 pl-2 outline-none'/>
+                      <textarea className='w-full  min-h-24 pl-2 outline-none' name='shippingdetails' onChange={handleinputchange}/>
                   </div>
                   </div>
 
@@ -392,7 +626,7 @@ const handlecolorsinput = (e)=>{
                     </div>
                     </div>
                     <div className='w-full flex  flex-row mt-5  bg-white rounded-xl'>
-                    <div className='w-100 p-2 flex flex-col justify-start items-start  gap-1 '>
+                    <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
                         <label className='text-md text-gray-500 font-normal'>Size</label>
                         <select className='w-full  border-2 rounded-xl outline-none pl-2' value={currentsize} onChange={(e)=>setCurrentSize(e.target.value)}>
                             <option disabled selected>select</option>
@@ -405,16 +639,17 @@ const handlecolorsinput = (e)=>{
                             
                         </select>
                     </div>
-                    <div className='w-100 p-2 flex flex-col justify-start items-start  gap-1 '>
-                        <label className='text-md text-gray-500 font-normal'>Price</label>
-                        <input className='w-full  border-2 rounded-xl outline-none pl-2' id='currentpriceinput' onChange={(e)=>setCurrentPrice(e.target.value)}/>
+                    <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
+                        <label className='text-md text-gray-500 font-normal'>MRP</label>
+                        <input className='w-full  border-2 rounded-xl outline-none pl-2' id='currentpriceinputmrp' onChange={(e)=>setCurrentPriceMrp(e.target.value)}/>
+                    </div>
+                    <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
+                        <label className='text-md text-gray-500 font-normal'>Offer price</label>
+                        <input className='w-full  border-2 rounded-xl outline-none pl-2' id='currentpriceinputoffer' onChange={(e)=>setCurrentPriceOffer(e.target.value)}/>
                     </div>
                     <div className='w-100 p-2 flex flex-col justify-center items-center pt-8  gap-1'>
                         <button onClick={handlepriceinput}><CirclePlus/></button>
                     </div>
-
-   
-                  
 
                     </div>
                     {
@@ -422,7 +657,7 @@ const handlecolorsinput = (e)=>{
 productjson?.sizeprice.map((item,index)=>(
     <div className='flex flex-row m-2 p-1 gap-2 w-100 bg-gray-200 justify-between items-center border-2 rounded-lg'>
 
-       <p>{item.size} / {item.price}</p>
+       <p>{item.size} / {item.offerprice}</p>
        <CircleX className='cursor-pointer ' onClick={()=> handleremoveitemsize('sizeprice', item.size )} />
 
     </div>

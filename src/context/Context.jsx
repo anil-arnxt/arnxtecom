@@ -11,7 +11,9 @@ import React, { createContext, useContext, useState } from 'react'
    const [cartdata, setCartData] = useState()
    const [wishlistitems, setWishlistItems] = useState()
    const [fetchwishlist, setFetchWishlist] = useState(false)
+   const [activeComponent, setActiveComponent] = useState('Rugsupload');
 
+   
   return (
      <Ecomcontext.Provider  value= { {
          cartdata,
@@ -25,7 +27,10 @@ import React, { createContext, useContext, useState } from 'react'
           wishlistitems,
           setWishlistItems,
           fetchwishlist, 
-          setFetchWishlist
+          setFetchWishlist,
+          activeComponent,
+          setActiveComponent
+      
       
         }}>
 
@@ -34,7 +39,11 @@ import React, { createContext, useContext, useState } from 'react'
      </Ecomcontext.Provider>
   )
 }
+
+
   export function  useAppContext(){
+
+   
     return useContext(Ecomcontext)
 
   }

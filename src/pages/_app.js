@@ -100,7 +100,7 @@ function MyApp({ Component, pageProps }) {
      },[fetchwishlist])
 
 
-     console.log(cartdata)
+    
   
   
     return null; 
