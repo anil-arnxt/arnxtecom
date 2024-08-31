@@ -21,6 +21,8 @@ const index = () => {
 
   const {cartdata,setCartData, setSubTotal, subtotal} = useAppContext()
 
+ 
+
 
 
   useEffect(()=>{

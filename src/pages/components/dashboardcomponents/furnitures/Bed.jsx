@@ -2,7 +2,7 @@ import { ArrowUpFromLine, CircleCheckBig, CirclePlus, CircleX } from 'lucide-rea
 import React, { useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 
-const Chair = () => {
+const Bed = () => {
     const [productjson, setProductJson] = useState({
         productname :'',
          brand: '',
@@ -27,11 +27,12 @@ const Chair = () => {
          productimages: [],
          glbfile: '',
          usdzfile: '',
+         bedsize:'',
          material: '',
-        
-          chairshape: '',
-           chairframematerial:'',
-           chairseatmaterial: '',
+         woodtype: '',
+     
+      
+        finishes: '',
           roomtype: '',
      
 
@@ -44,33 +45,68 @@ const Chair = () => {
     const [usdzfile, setUsdzFile] = useState()
 
     const [images, setImages] = useState([])
-   
 
-   
-    const chairshape = ["L-Shape", "Rectangular", "Square"]
-    
       const roomtype = ["Bedroom", "Guest Room", "Home Office", "Home Theater", "Living Room", "Meeting Room", "Study Room"]
   
-      const material = ["Metal", "Plastic", "PVC", "Solid Wood"];
-      const chairframematerial = [
-        "Alloy Steel",
-        "Engineered Wood",
-        "Iron",
-        "Metal",
-        "Plastic",
-        "Polypropylene",
-        "Polyvinyl Chloride",
-        "Rubberwood",
-        "Wood"
+      const shapes = [
+        'Hexagonal',
+        'L-Shape',
+        'Octagonal',
+        'Oval',
+        'Rectangular',
+        'Round',
+        'S-Shape',
+        'Semicircular',
+        'Square',
+        'T-Shape',
+        'Triangular'
       ];
-      const chairseatmaterial = [
-        "Faux Leather",
-        "Foam",
-        "Memory Foam",
-        "Plastic",
-        "Polyester",
-        "Wood"
+  
+      const finishes = [
+        'Brushed',
+        'Lacquered',
+        'Laminated',
+        'Painted',
+        'Polished',
+        'Powder Coated',
+        'Stained',
+        'Unfinished',
+        'Varnished'
       ];
+
+      const bedsizes = [
+        'Single',
+        'Double',
+        'Queen',
+        'King'
+      ];
+
+      const material = [
+        'Engineered Wood',
+        'Fabric',
+        'Glass',
+        'MDF',
+        'Metal',
+        'Plastic',
+        'PVC',
+        'Rattan',
+        'Solid Wood'
+      ];
+      const woodTypes = [
+        'Bronze',
+        'Cherry',
+        'Chestnut',
+        'Mahogany',
+        'Maple',
+        'Oak',
+        'Pine',
+        'Rosewood',
+        'Teak',
+        'Walnut',
+        'Wenge'
+      ];
+    
+     
 
     const handleremoveitem = (name, value) =>{
 
@@ -320,9 +356,6 @@ const handleusdzfile = (e)=>{
             }
 
 }
-
-console.log(productjson)
-
   return (
     <div>
     <Toaster/>
@@ -499,11 +532,11 @@ onChange={handleusdzfile}
 </div>
 <div className='w-full flex flex-row'>
                 <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
-                    <label className='text-md text-gray-500 font-normal'>Chair shape</label>
-                    <select className='w-full  border-2 rounded-xl outline-none p-2' name='chairshape' onChange={handleinputchange} >
+                    <label className='text-md text-gray-500 font-normal'>Bed size</label>
+                    <select className='w-full  border-2 rounded-xl outline-none p-2' name='bedsize' onChange={handleinputchange} >
                         <option disabled selected>select</option>
                         {
-                            chairshape.map(item=>(
+                        bedsizes.map(item=>(
 
                                 <option>{item}</option>
                             ))
@@ -531,11 +564,11 @@ onChange={handleusdzfile}
                     
                 </div>
                 <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
-                    <label className='text-md text-gray-500 font-normal'>Frame material</label>
-                    <select className='w-full  border-2 rounded-xl outline-none p-2' name='chairframematerial' onChange={handleinputchange}>
+                    <label className='text-md text-gray-500 font-normal'>Wood type</label>
+                    <select className='w-full  border-2 rounded-xl outline-none p-2' name='woodtype' onChange={handleinputchange}>
                         <option disabled selected>select</option>
                         {
-                            chairframematerial.map(item=>(
+                            woodTypes.map(item=>(
 
                                 <option>{item}</option>
                             ))
@@ -547,11 +580,11 @@ onChange={handleusdzfile}
                     
                 </div>
                 <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
-                    <label className='text-md text-gray-500 font-normal'>Seat material</label>
-                    <select className='w-full  border-2 rounded-xl outline-none p-2' name='chairseatmaterial' onChange={handleinputchange}>
+                    <label className='text-md text-gray-500 font-normal'>Finishes</label>
+                    <select className='w-full  border-2 rounded-xl outline-none p-2' name='finishes' onChange={handleinputchange}>
                         <option disabled selected>select</option>
                         {
-                            chairseatmaterial.map(item=>(
+                            finishes.map(item=>(
 
                                 <option>{item}</option>
                             ))
@@ -672,4 +705,4 @@ onChange={handleusdzfile}
   )
 }
 
-export default Chair
+export default Bed

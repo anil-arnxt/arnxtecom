@@ -2,7 +2,7 @@ import { ArrowUpFromLine, CircleCheckBig, CirclePlus, CircleX } from 'lucide-rea
 import React, { useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 
-const Chair = () => {
+const Barstool = () => {
     const [productjson, setProductJson] = useState({
         productname :'',
          brand: '',
@@ -27,11 +27,8 @@ const Chair = () => {
          productimages: [],
          glbfile: '',
          usdzfile: '',
-         material: '',
         
-          chairshape: '',
-           chairframematerial:'',
-           chairseatmaterial: '',
+           shapes: '',
           roomtype: '',
      
 
@@ -44,33 +41,20 @@ const Chair = () => {
     const [usdzfile, setUsdzFile] = useState()
 
     const [images, setImages] = useState([])
-   
 
-   
-    const chairshape = ["L-Shape", "Rectangular", "Square"]
-    
       const roomtype = ["Bedroom", "Guest Room", "Home Office", "Home Theater", "Living Room", "Meeting Room", "Study Room"]
   
-      const material = ["Metal", "Plastic", "PVC", "Solid Wood"];
-      const chairframematerial = [
-        "Alloy Steel",
-        "Engineered Wood",
-        "Iron",
-        "Metal",
-        "Plastic",
-        "Polypropylene",
-        "Polyvinyl Chloride",
-        "Rubberwood",
-        "Wood"
+      const shapes = [
+        'Hexagonal',
+        'Hourglass',
+        'Oval',
+        'Rectangular',
+        'Round',
+        'Square',
+        'Triangular'
       ];
-      const chairseatmaterial = [
-        "Faux Leather",
-        "Foam",
-        "Memory Foam",
-        "Plastic",
-        "Polyester",
-        "Wood"
-      ];
+    
+     
 
     const handleremoveitem = (name, value) =>{
 
@@ -320,9 +304,6 @@ const handleusdzfile = (e)=>{
             }
 
 }
-
-console.log(productjson)
-
   return (
     <div>
     <Toaster/>
@@ -499,11 +480,11 @@ onChange={handleusdzfile}
 </div>
 <div className='w-full flex flex-row'>
                 <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
-                    <label className='text-md text-gray-500 font-normal'>Chair shape</label>
-                    <select className='w-full  border-2 rounded-xl outline-none p-2' name='chairshape' onChange={handleinputchange} >
+                    <label className='text-md text-gray-500 font-normal'>Shapes</label>
+                    <select className='w-full  border-2 rounded-xl outline-none p-2' name='shapes' onChange={handleinputchange} >
                         <option disabled selected>select</option>
                         {
-                            chairshape.map(item=>(
+                        shapes.map(item=>(
 
                                 <option>{item}</option>
                             ))
@@ -514,54 +495,9 @@ onChange={handleusdzfile}
                     </select>
                     
                 </div>
-                <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
-                    <label className='text-md text-gray-500 font-normal'>Material</label>
-                    <select className='w-full  border-2 rounded-xl outline-none p-2' name = 'material' onChange={handleinputchange}>
-                        <option disabled selected>select</option>
-
-                        {
-                            material.map(item=>(
-                              <option>{item}</option>
-                            ))
-                        }
-                   
-
-
-                    </select>
-                    
-                </div>
-                <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
-                    <label className='text-md text-gray-500 font-normal'>Frame material</label>
-                    <select className='w-full  border-2 rounded-xl outline-none p-2' name='chairframematerial' onChange={handleinputchange}>
-                        <option disabled selected>select</option>
-                        {
-                            chairframematerial.map(item=>(
-
-                                <option>{item}</option>
-                            ))
-                        }
-                    
-
-
-                    </select>
-                    
-                </div>
-                <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
-                    <label className='text-md text-gray-500 font-normal'>Seat material</label>
-                    <select className='w-full  border-2 rounded-xl outline-none p-2' name='chairseatmaterial' onChange={handleinputchange}>
-                        <option disabled selected>select</option>
-                        {
-                            chairseatmaterial.map(item=>(
-
-                                <option>{item}</option>
-                            ))
-                        }
-                    
-
-
-                    </select>
-                    
-                </div>
+             
+          
+           
                 <div className='w-full p-2 flex flex-col justify-start items-start  gap-1 '>
                     <label className='text-md text-gray-500 font-normal'>Room type</label>
                     <select className='w-full  border-2 rounded-xl outline-none p-2' name='roomtype' onChange={handleinputchange}>
@@ -672,4 +608,4 @@ onChange={handleusdzfile}
   )
 }
 
-export default Chair
+export default Barstool

@@ -10,8 +10,7 @@ import { Inter } from 'next/font/google'
 import { useContext, useEffect } from 'react';
 import axios from 'axios';
 import   { Context, Ecomcontext, useAppContext } from '@/context/context';
-
-
+import Sidebar from './components/Sidebar';
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -99,10 +98,6 @@ function MyApp({ Component, pageProps }) {
 
      },[fetchwishlist])
 
-
-    
-  
-  
     return null; 
   }
 
@@ -115,6 +110,8 @@ function MyApp({ Component, pageProps }) {
       <FetchCartData/>
      
       <Component {...pageProps} />
+      <Sidebar/>
+     
     
     </main>
     </Context>

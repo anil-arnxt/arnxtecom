@@ -1,7 +1,7 @@
 
 import { useAppContext } from '@/context/Context'
 import { ChartColumn, ListOrdered, ShoppingBasket, TableOfContents, User } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const Sidebar = () => {
 
@@ -9,9 +9,6 @@ const Sidebar = () => {
     const [contentisopen, setContentIsOpen] = useState(false)
     const [furnitureopen, setFurnitureOpen] = useState(false)
     const {activeComponent, setActiveComponent} = useAppContext()
-
-    console.log(activeComponent)
-
 
     const handleshowproduct = ()=>{
         setProductIsOpen(!productisopen)
@@ -22,6 +19,9 @@ const Sidebar = () => {
     const handleshowfurniture=()=>{
       setFurnitureOpen(!furnitureopen)
     }
+  console.log(activeComponent)
+  
+
   return (
     <div className='fixed left-0 w-[200px] z-30 h-screen bg-gray-200'>
         <ul className='flex flex-col w-full justify-start items-start gap-2 mt-5'>
