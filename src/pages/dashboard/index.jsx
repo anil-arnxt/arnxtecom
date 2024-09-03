@@ -19,6 +19,10 @@ import Sideboard from '../components/dashboardcomponents/furnitures/Sideboard'
 import Table from '../components/dashboardcomponents/furnitures/Table'
 import Bookshelf from '../components/dashboardcomponents/furnitures/Bookshelf'
 import Studytable from '../components/dashboardcomponents/furnitures/Studytable'
+import Wallpaperupload from '../components/dashboardcomponents/Wallpaperupload'
+import Washingmachine from '../components/dashboardcomponents/electronics/Washingmachine'
+import Microwave from '../components/dashboardcomponents/electronics/Microwave'
+import Refrigerator from '../components/dashboardcomponents/electronics/Refrigerator'
 
 
 
@@ -45,6 +49,9 @@ const index = () => {
     const [activeindex, setActiveIndex] = useState(0)
 
     const [showfurnitureupload, setShowFurnitureUpload] = useState(false)
+    const [electronicsupload, setElectronicsUpload] = useState(false)
+
+
 
         const [productjson, setProductJson] = useState({
             productname :'',
@@ -105,6 +112,24 @@ const index = () => {
           { label: 'Study table', component: 'Studytable' },
           { label: 'Table', component: 'Table' }
         ];
+         
+         const electronicsArray = [
+
+          { label: 'Washing machine', component: 'Washingmachine' },
+          { label: 'Microwave', component: 'Microwave' },
+          { label: 'Refrigerator', component: 'Refrigerator' },
+     
+
+         ]
+
+         const electicalArray = [
+
+          { label: 'Washing machine', component: 'Washingmachine' },
+          { label: 'Microwave', component: 'Microwave' },
+          { label: 'Refrigerator', component: 'Refrigerator' },
+     
+
+         ]
 
         const handleproductdetails = (e)=>{
            
@@ -567,9 +592,9 @@ const index = () => {
           setActiveIndex(index)
         }
 
-        const handlelistclick = ()=>{
+        const handlelistclick = (value)=>{
           setFurnitureOpen(false)
-          setActiveComponent('Rugsupload')
+          setActiveComponent(value)
         }
 
      
@@ -578,6 +603,14 @@ const index = () => {
             switch (activeComponent) {
               case 'Rugsupload':
                 return <Rugsupload />;
+                case 'Wallpaperupload':
+                  return <Wallpaperupload />;
+                  case 'Washingmachine':
+                    return <Washingmachine />;
+                    case 'Microwave':
+                      return <Microwave />;
+                      case 'Refrigerator':
+                        return <Refrigerator />;
               case 'Sofa':
                 return <Sofa />;
               case 'Chair':
@@ -613,6 +646,10 @@ const index = () => {
                 return <Rugsupload />;
             }
           };
+
+          const handleClickElectronics = ()=>{
+            setElectronicsUpload(!electronicsupload)
+          }
 
   return (
     <div className='flex flex-col'>
@@ -651,8 +688,8 @@ const index = () => {
                  contentisopen ? 'max-h-full scale-y-100 opacity-100' : 'max-h-0 scale-y-0 opacity-0'
                }`}
              >
-                  <li><p className='text-sm cursor-pointer' onClick={()=>handlelistclick()} >Rugs upload</p></li>
-                  <li><p  className='text-sm cursor-pointer'>Wallpaper upload</p></li>
+                  <li><p className='text-sm cursor-pointer' onClick={()=>handlelistclick('Rugsupload')} >Rugs upload</p></li>
+                  <li><p  className='text-sm cursor-pointer' onClick={()=>handlelistclick('Wallpaperupload')}>Wallpaper upload</p></li>
                   <li><p  className='text-sm cursor-pointer' onClick={handleshowfurniture}>Furniture upload</p>
                   {
                
@@ -670,21 +707,31 @@ const index = () => {
   ))}
 
 
-
-
-
-
-
-
-             
-               
-
              </ul> 
                }
                   
                   </li>
-                  <li><p  className='text-sm cursor-pointer'>Electical upload</p></li>
-                  <li><p  className='text-sm cursor-pointer'>Electronics upload</p></li>
+                  <li><p  className='text-sm cursor-pointer'>Electrical upload</p></li>
+                  <li><p  className='text-sm cursor-pointer' onClick={handleClickElectronics}>Electronics upload</p>
+                  {
+               
+               <ul 
+               className={`flex flex-col ml-5 gap-1  transition-all duration-300 ease-in-out transform origin-top overflow-hidden ${
+                 electronicsupload? 'max-h-full scale-y-100 opacity-100' : 'max-h-0 scale-y-0 opacity-0'
+               }`}
+             >
+           {electronicsArray.map((item, index) => (
+    <li key={index}>
+      <p className= {`text-xs cursor-pointer p-2 rounded-1 ${activeindex === index ? 'bg-gray-100': '' }  `} onClick={() => handleClickDropdown(item.component, index) }>
+        {item.label}
+      </p>
+    </li>
+  ))}
+
+
+             </ul> 
+               }
+                  </li>
 
                </ul>
               </div>
@@ -695,15 +742,10 @@ const index = () => {
         </div>
         <div>
            {renderComponent()}
-      
-    
 
-        </div>
        
-
-
-
-      
+        </div>
+        
     </div>
   )
 }

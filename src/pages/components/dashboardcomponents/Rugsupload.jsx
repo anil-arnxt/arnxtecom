@@ -1,15 +1,21 @@
+import axios from 'axios'
 import { ArrowUpFromLine, CircleCheckBig, CirclePlus, CircleX } from 'lucide-react'
 import React, { useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 
 const Rugsupload = () => {
 
+  const imagesuploadurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/arnxtecomimageupload'
+
+    const uploadproducturl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/addproductarnxtecom'
+
     const [productjson, setProductJson] = useState({
         productname :'',
          brand: '',
         sku: '',
-        category: '',
-        subcategory: '',
+        vendor: '',
+        category: 'Furnishing',
+        subcategory: 'Rugs',
          productcategory  :  '',
          tags: [],
          colors: [],
@@ -81,6 +87,20 @@ const Rugsupload = () => {
         "Patchwork"
       ];
      const  material = ["Wool", "Wool & Bamboo Silk", "Wool & Silk", "Silk", "Viscose", "Jute & Hemp", "Cotton", "Others"]
+
+     const sizearray = [
+
+      "2X3 ft / 60X90",
+      "3X5 ft / 90X150",
+      "4X6 ft / 120X180",
+      "5X8 ft / 150X240",
+      "6X9 ft / 180X270",
+      "8X10 ft / 240X300",
+      "9X12 ft / 270X360",
+      "10X14 ft / 300X420",
+      "12X15 ft / 360X450",
+      "Oversize"
+     ]
 
     const handleremoveitem = (name, value) =>{
 
@@ -332,14 +352,178 @@ const handleusdzfile = (e)=>{
 }
 
 
-console.log(productjson)
+const uploadImages = async  ()=>{
+  const temparray = []
+
+  for(let i=0; i<images.length; i++){
+
+  const url =  imagesuploadurl;
+
+
+  await fetch(url, {
+    method: "POST",
+    body: images[i].name,
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      fetch(res.uploadURL, {
+        method: "PUT",
+        headers: {
+          ContentType: "image/jpeg",
+        },
+
+        body: images[i],
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            let resnew = res.url.split("?");
+            let imgurl = resnew[0];
+
+             temparray.push(imgurl)  
+
+          }
+        })
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => console.log(err));
+  }
+return temparray
+
+
+}
+
+const uploadglbfile = async ()=>{
+
+  try {
+    const url = imagesuploadurl;
+
+    const res = await fetch(url, {
+        method: "POST",
+        body: glbfile.name,
+    });
+    const data = await res.json();
+
+ 
+    const uploadRes = await fetch(data.uploadURL, {
+        method: "PUT",
+        headers: {
+            ContentType: "image/jpeg",
+        },
+        body: glbfile,
+    });
+
+    if (uploadRes.status === 200) {
+        const resnew = uploadRes.url.split("?");
+        const imgurl = resnew[0];
+        return imgurl; 
+    } else {
+        throw new Error('Image upload failed');
+    }
+} catch (error) {
+    console.error("An error occurred:", error);
+    return undefined; 
+}
+
+}
+
+const uploadusdzfile = async ()=>{
+  try {
+    const url = imagesuploadurl;
+
+    const res = await fetch(url, {
+        method: "POST",
+        body: usdzfile.name,
+    });
+    const data = await res.json();
+
+ 
+    const uploadRes = await fetch(data.uploadURL, {
+        method: "PUT",
+        headers: {
+            ContentType: "image/jpeg",
+        },
+        body: usdzfile,
+    });
+
+    if (uploadRes.status === 200) {
+        const resnew = uploadRes.url.split("?");
+        const imgurl = resnew[0];
+        return imgurl; 
+    } else {
+        throw new Error('Image upload failed');
+    }
+} catch (error) {
+    console.error("An error occurred:", error);
+    return undefined; 
+}
+
+}
+
+const handlesaveproduct = async ()=>{
+    
+  try {
+    const [imagesurl, glburl, usdzurl] =    await Promise.all([
+          uploadImages(),
+
+          uploadglbfile(),
+          uploadusdzfile()
+         
+       ])
+
+      
+
+  
+    const body = {
+       Id: new Date().getTime().toString(),
+       productname : productjson.productname.toLowerCase(),
+       brandname: productjson.brand.toLowerCase(),
+       sku: productjson.sku,
+       vendor: productjson.vendor,
+       category:  productjson.category,
+       subcategory: productjson.subcategory,
+        tags: productjson.tags,
+         sizeprice: productjson.sizeprice,
+        colors: productjson.colors,
+        productcategory: productjson.productcategory,
+        details: productjson.details,
+        designstory: productjson.designstory,
+        shippingdetails: productjson.shippingdetails,
+        material: productjson.material,
+        collection: productjson.collection,
+        design: productjson.design,
+        style: productjson.style,
+        care: productjson.care,
+        images : imagesurl,
+      
+        glbfile: glburl,
+        usdzfile: usdzurl
+    }  
+
+
+  
+    
+    const response = await axios.post(uploadproducturl, body);
+      if(response.status === 200){
+        toast.success('Product added!')
+         window.location.reload()
+
+      }
+      
+
+   } catch (error) {
+       console.error("An error occurred during the uploads:", error);
+   }
+}
+
+
+
   return (
     <div>
         <Toaster/>
          <div className='w-full  h-12 border-2 rounded-xl bg-gray-200 top-0 sticky'>
 
               <div className='w-full h-full  flex flex-row justify-end items-center ' >
-                <button className='border-2 rounded-xl px-2 bg-gray-400 mr-5 '>Save</button>
+                <button className='border-2 rounded-xl px-2 bg-gray-400 mr-5 '  onClick={()=>handlesaveproduct()}>Save</button>
 
               </div>
 
@@ -630,10 +814,14 @@ console.log(productjson)
                         <label className='text-md text-gray-500 font-normal'>Size</label>
                         <select className='w-full  border-2 rounded-xl outline-none pl-2' value={currentsize} onChange={(e)=>setCurrentSize(e.target.value)}>
                             <option disabled selected>select</option>
-                            <option>125cm/2feet</option>
-                            <option>148cm/3feet</option>
-                            <option>185cm/6feet</option>
-                            <option>240cm/8feet</option>
+                            {
+                              sizearray.map(item=>(
+                              <option>{item}</option>
+                              ))
+
+                            }
+                            
+                          
                            
 
                             

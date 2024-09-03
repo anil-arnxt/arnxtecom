@@ -12,8 +12,11 @@ import { AiFillLeftCircle, AiFillRightCircle } from "react-icons/ai";
 import { IconContext } from "react-icons"; 
 import '@/pages/subcategory/subcategory.css'
 import axios from 'axios';
+import Rugs from '../components/subcategorycomponents/Rugs';
 
 const getsubcategorydataurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getsubcategoryitemarnxtecom'
+
+const getfilteritemsurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getfilterdataarnxtecom'
 
 export async function getServerSideProps({ params }) {
   const { subcategory } = params; 
@@ -24,15 +27,22 @@ export async function getServerSideProps({ params }) {
     subcategory: subcategory,
   };
 
+
+
   const response = await axios.post(getsubcategorydataurl, body );
   const dataitem = response.data;
 
+  const response2 = await axios.post(getfilteritemsurl, body);
+  const filteritem = response2.data;
+
+
+
   return {
-    props: { dataitem },
+    props: { dataitem, filteritem },
   };
 }
 
-const Subcategory = ({dataitem}) => {
+const Subcategory = ({dataitem , filteritem}) => {
   const [page, setPage] = useState(0);
 
   
@@ -40,17 +50,21 @@ const Subcategory = ({dataitem}) => {
   const [filteritemarray, setFilterItemArray] = useState([])
   const [currenttag, setCurrentTag] = useState(null)
 
+  const [filters, setFilters] = useState()
 
+  const [currentfiltername, setCurrentFilterName] = useState()
+
+  
 
   useEffect(()=>{
 
       setProductData(dataitem)
 
+      setFilters(filteritem)
+
   },[])
 
   const n = 9
-  
-
   
   const filterData = useMemo(() => {
     return productdata?.slice(page * n, (page + 1) * n);
@@ -79,33 +93,60 @@ const Subcategory = ({dataitem}) => {
     
         }
 
+     
+
         
     useEffect(()=>{
 
         let temparr = []
+
+         const filterfinal = currentfiltername?.toLowerCase()
+
+         
+      
      if(filteritemarray.length > 0){
           
            for(let item of dataitem){
+                
+                
           
-               for (let coloritem of item.colors ){
-                 if(filteritemarray.includes(coloritem)){
-                     temparr = [...temparr, item]    
-                 }
-               }
+                if(Array.isArray(item[filterfinal]) > 0 ){
 
-             
+                    for(let color of item[filterfinal]){
+
+                      if(filteritemarray.includes(color.charAt(0).toUpperCase() + color.slice(1))){
+                        if(!temparr.includes(item)){
+                          temparr = [...temparr, item]
+
+                        }
+                      }
+                    }
+
+                }else{
+                  if(filteritemarray.includes(item[filterfinal])){
+
+          
+                    temparr = [...temparr, item]
+                 }
+            
+                }
+           
 
              }
 
+           
+
+
           setProductData(temparr)
          
-           
-     }
+    }
      if(filteritemarray.length === 0){
          setProductData(dataitem)
      }
 
- },[filteritemarray])
+ },[filteritemarray,currentfiltername])
+
+
 
  useEffect(()=>{
 
@@ -137,27 +178,29 @@ const handlePriceSorting = (value)=>{
 
     if(value === 'High to low'){
      
-        const sortedProducts = [...productdata].sort((a, b) => parseFloat(b.offerprice) - parseFloat(a.offerprice));
+        const sortedProducts = [...productdata].sort((a, b) => parseFloat(b.sizeprice[0].offerprice) - parseFloat(a.sizeprice[0].offerprice));
         setProductData(sortedProducts);
      }
     
     if(value === 'Low to high'){
      
-        const sortedProducts = [...productdata].sort((a, b) => parseFloat(a.offerprice) - parseFloat(b.offerprice));
+        const sortedProducts = [...productdata].sort((a, b) => parseFloat(a.sizeprice[0].offerprice) - parseFloat(b.sizeprice[0].offerprice));
         setProductData(sortedProducts);
     }
 }
     
 
-const handlefilterchange = (e)=>{
-     
+const handlefilterchange = (e, filtername)=>{
 
     const body = e.target
-   
+
+
     if(body.checked){
           if(!filteritemarray.includes(body.value)){
             setFilterItemArray([...filteritemarray, body.value])
           }
+
+       
     }else{
         if(filteritemarray.includes(body.value)){
              const newarr = filteritemarray.filter(item=>{
@@ -167,7 +210,10 @@ const handlefilterchange = (e)=>{
             
         }
     }
+    setCurrentFilterName(filtername)   
 }
+
+
 
 
 useEffect(()=>{
@@ -178,10 +224,19 @@ useEffect(()=>{
            if(productdata !== undefined){
              
             for(let item of dataitem ){
-                if(Number(item.offerprice) > Number(value[0]) && Number(item.offerprice) < Number(value[1])){
-                  temparr = [...temparr, item]
-  
+
+                for (let price of item.sizeprice){
+                  if(Number(price.offerprice) > Number(value[0]) && Number(price.offerprice) < Number(value[1])){
+
+                    if(!temparr.includes(item)){
+                      temparr = [...temparr, item]
+
+                    }
+    
+                  }
+
                 }
+            
                  }
   
             setProductData(temparr)
@@ -189,6 +244,8 @@ useEffect(()=>{
            }
 
 },[value])
+
+
   return (
     <div >
     <Navbar/>
@@ -359,55 +416,7 @@ step={5}
 <div className='container grid grid-cols-12 mx-auto w-full  h-[600px] mb-40 gap-2'>
 
  <div className='hidden md:flex md:col-span-3 flex-col no-scrollbar overflow-y-scroll '>
-{/* 
-    <div className='flex flex-col border-2 p-5'>
-        <div className='mt-5'>
-            <p className='text-xl font-bold'>
-                Product Category
 
-            </p>
-
-        </div>
-        <div className='mt-2'>
-            <ul className='list-none flex flex-col gap-2'>
-                <li>
-                     <div className='inline-flex hover:border-gray-400 border-2 w-full rounded-xl justify-between p-2'>
-                      <p>
-                        Furniture
-                      </p>
-                      <input type='checkbox'/>
-                     </div>
-                 </li>
-                 <li>
-                     <div className='inline-flex hover:border-gray-400 border-2 w-full rounded-xl justify-between p-2'>
-                      <p>
-                       Electical
-                      </p>
-                      <input type='checkbox'/>
-                     </div>
-                 </li>
-                 <li>
-                     <div className='inline-flex hover:border-gray-400 border-2 w-full rounded-xl justify-between p-2'>
-                      <p>
-                       Rugs
-                      </p>
-                      <input type='checkbox'/>
-                     </div>
-                 </li>
-                 <li>
-                     <div className='inline-flex hover:border-gray-400 border-2 w-full rounded-xl justify-between p-2'>
-                      <p>
-                        Wallpapers
-                      </p>
-                      <input type='checkbox'/>
-                     </div>
-                 </li>
-          
-                  </ul>
-
-        </div>
-        
-    </div> */}
 
     <div className='flex flex-col border-2 p-5 mt-5'>
         <div className='mt-5'>
@@ -441,54 +450,45 @@ step={5}
    
         
     </div>
-    <div className='flex flex-col border-2 mt-5 p-5'>
+
+    {
+     filters &&   filters[0]?.filters.map((item,index)=>(
+        <div className='flex flex-col border-2 mt-5 p-5'>
         <div className='mt-5'>
             <p className='text-xl font-bold'>
-                Color
+                {item.filtername}
 
             </p>
 
         </div>
+
         <div className='mt-2'>
         <ul className='list-none flex flex-col gap-2'>
-                    <li>
-                         <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
-                          <p>
-                            Red
-                          </p>
-                          <input type='checkbox' value={'red'} id='catcheckbox' onChange={handlefilterchange}/>
-                         </div>
-                     </li>
-                     <li>
-                         <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
-                          <p>
-                           Green
-                          </p>
-                          <input type='checkbox' value={'green'} id='catcheckbox' onChange={handlefilterchange}/>
-                         </div>
-                     </li>
-                     <li>
-                         <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
-                          <p>
-                           Blue
-                          </p>
-                          <input type='checkbox' value={'blue'} id='catcheckbox' onChange={handlefilterchange}/>
-                         </div>
-                     </li>
-                     <li>
-                         <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
-                          <p>
-                            White
-                          </p>
-                          <input type='checkbox' value={'white'} id='catcheckbox' onChange={handlefilterchange}/>
-                         </div>
-                     </li>
-              
+          {
+
+          item.filtervalue &&   item.filtervalue?.map((filter)=>(
+
+              <li>
+              <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
+               <p>
+                {filter}
+               </p>
+               <input type='checkbox' value={filter} id='catcheckbox' onChange={(e)=>handlefilterchange(e,item.filtername)}/>
+              </div>
+          </li>
+
+            ))
+          }
                       </ul>
 
         </div>
         
     </div>
+
+        
+      ))
+    }
+   
 
 
  </div>
@@ -573,7 +573,9 @@ step={5}
 
       </div>
 
-      <div className='grid grid-cols-1 md:grid-cols-3 w-full gap-2 h-[600px] overflow-y-scroll no-scrollbar mt-10 place-items-center'>
+             <Rugs filterData={filterData}/>
+
+      {/* <div className='grid grid-cols-1 md:grid-cols-3 w-full gap-2 h-[600px] overflow-y-scroll no-scrollbar mt-10 place-items-center'>
       {
               filterData && filterData.map((product,index)=>(
 
@@ -616,7 +618,7 @@ step={5}
 
     
 
-      </div>
+      </div> */}
     
     </div>
 

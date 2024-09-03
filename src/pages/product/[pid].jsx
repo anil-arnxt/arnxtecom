@@ -46,19 +46,23 @@ const Product = ({dataitem}) => {
         const {quantity , setQuantity} =   useAppContext()
         
          const [currentimage, setCurrentImage] = useState(dataitem && dataitem.productmainimage)
-        const [currentproductdetails, setCurrentProductDetails] = useState(dataitem['features'])
+        const [currentproductdetails, setCurrentProductDetails] = useState(dataitem['care'])
         const [activeindeximage, setActiveIndexImage] = useState(0)
+      
 
     const [tempquantity, setTempQuantity] = useState(0)
+    const [activepriceindex, setActivePriceIndex] = useState(0)
 
      const handleimageclick = (value, index)=>{
-          setCurrentImage(value)
+           setActiveIndexImage(index)
           setActiveIndexImage(index)
      }        
 
     const [activeIndex, setActiveIndex] = useState(0);
 
     const handleClick = (index, value) => {
+
+   
       setActiveIndex(index);
       setCurrentProductDetails(dataitem[value])
     };
@@ -120,12 +124,11 @@ const Product = ({dataitem}) => {
     }, []);
   
     const items = [
-      'Features',
-      'Properties',
+    
       'Care',
-      'Warrantydetails',
-      'Returns',
-      'QualityPromise'
+       'DesignStory',
+      'Details',
+      'ShippingDetails'
     ];
 
 
@@ -159,7 +162,7 @@ const Product = ({dataitem}) => {
     }
 
 
-
+console.log(dataitem)
  
   return (
     <div>
@@ -169,31 +172,35 @@ const Product = ({dataitem}) => {
   <div className='grid md:grid-cols-12 grid-cols-1'>
     <div className='md:col-span-5 flex justify-center h-[500px] md:justify-start'>
       <div className='grid grid-rows-12 w-full md:w-[500px] place-items-center '>
-        <div className='row-span-9 w-full h-full flex justify-center'>
+        <div className='row-span-9 w-full h-full  flex justify-center'>
         {
           isClient && 
+
         
-        <ImageZoom
-      src={currentimage && currentimage}
-      defaultZoomFactor={1.5}
-      transition={0.5}
-      breakpoints={[
-        { maxWidth: 768, zoomFactor: 1.2 },
-        { maxWidth: 1024, zoomFactor: 1.4 }
-      ]}
-    
-    imgClassName='imageproduct'
-      debug={false}
-    />
+              <ImageZoom
+              src={dataitem && dataitem?.images[activeindeximage]}
+              defaultZoomFactor={1.5}
+              transition={0.5}
+              breakpoints={[
+                { maxWidth: 768, zoomFactor: 1.2 },
+                { maxWidth: 1024, zoomFactor: 1.4 }
+              ]}
+            
+            imgClassName='imageproduct'
+              debug={false}
+            />
+          
+        
+  
 }
           {/* <Image src={dataitem && dataitem.productmainimage} width={400} height={400} className='w-full max-w-[400px] object-contain'/> */}
         </div>
-        <div className='row-span-3 w-full'>
+        <div className='row-span-3 w-full mt-12 '>
           <div className='p-2 grid grid-cols-4 gap-2 place-items-center '>
 
             {
 
-              dataitem && dataitem.productrestimage?.map((prod,index)=>(
+              dataitem && dataitem.images?.map((prod,index)=>(
                 <div className={`p-2 cursor-pointer ${activeindeximage === index ? `border-2` : ''}`}   onClick={()=>handleimageclick(prod, index)}>
                 <Image src={prod} width={200} height={200} className='w-full max-w-[100px]  object-contain'/>
               </div>
@@ -204,29 +211,41 @@ const Product = ({dataitem}) => {
         </div>
       </div>
     </div>
-    <div className='md:col-span-7'>
-      <div className='w-full md:ml-20 flex flex-col mt-10'>
+    <div className='md:col-span-7 '>
+      <div className='w-100 md:ml-20 flex flex-col mt-10'>
         <p className='text-xl font-bold max-w-[400px]'>{dataitem && dataitem.productname.toUpperCase()}</p>
 
         <div className='flex flex-row'>
-        <p className='text-md text-zinc-400 font-bold mt-5 line-through'>₹ {dataitem && dataitem.mrp}</p>
+        <p className='text-md text-zinc-400 font-bold mt-5 line-through'>₹ {dataitem && dataitem?.sizeprice[activepriceindex].mrp}</p>
 
-        <p className='text-xl text-zinc-600 font-bold mt-5 ml-2'>₹ {dataitem && dataitem.offerprice}</p>
+        <p className='text-xl text-zinc-600 font-bold mt-5 ml-2'>₹ {dataitem && dataitem?.sizeprice[activepriceindex].offerprice}</p>
 
 
         </div>
+        <div className='flex flex-row  h-fit gap-2 mt-2'>
+          {
+            dataitem && dataitem.sizeprice?.map((item,index)=>(
+
+              <p className={`border-2 rounded-xl p-1 cursor-pointer  ${activepriceindex === index ? 'bg-gray-300': ''}`}  onClick={()=>setActivePriceIndex(index)}>{item.size}</p>
+            ))
+          }
+
+
+        </div>
+    
 
         <div className='flex flex-row justify-between w-full md:w-[160px] mt-5'>
           <div>
-            <select className='rounded-xl border-2'>
-              <option disabled selected> Color </option>
+            <select className='rounded-xl border-2 p-1'>
+              <option disabled selected> Color</option>
+              {
+                 dataitem && dataitem.colors?.map(item=>(
+                  <option>{item}</option>
+                 ))
+              }
             </select>
           </div>
-          <div>
-            <select className='rounded-xl border-2'>
-              <option disabled selected> Size </option>
-            </select>
-          </div>
+      
         </div>
         <div className='mt-5'>
           <div className='flex flex-row justify-start items-center'>
@@ -262,7 +281,7 @@ const Product = ({dataitem}) => {
     </div>
   </div>
 
-  <div className='grid md:grid-cols-6 border-2 mt-10 place-items-center grid-cols-1'>
+  <div className='grid md:grid-cols-4 border-2 mt-24 place-items-center grid-cols-1'>
       {items.map((item, index) => (
         <div
           key={index}
