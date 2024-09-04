@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { CircleX, Cross, ImageMinus,ChartColumn, ListOrdered, ShoppingBasket, TableOfContents, User } from 'lucide-react'
+import { CircleX, Cross, ImageMinus,ChartColumn, ListOrdered, ShoppingBasket, TableOfContents, User, Wallpaper } from 'lucide-react'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import Sidebar from '../components/Sidebar'
@@ -741,7 +741,8 @@ const index = () => {
     </div>
         </div>
         <div>
-           {renderComponent()}
+           {/* {renderComponent()} */}
+           <Wallpaperupload/>
 
        
         </div>

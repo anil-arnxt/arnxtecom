@@ -13,6 +13,8 @@ import { IconContext } from "react-icons";
 import '@/pages/subcategory/subcategory.css'
 import axios from 'axios';
 import Rugs from '../components/subcategorycomponents/Rugs';
+import { usePathname } from 'next/navigation';
+import Sofa from '../components/subcategorycomponents/Sofa';
 
 const getsubcategorydataurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getsubcategoryitemarnxtecom'
 
@@ -45,7 +47,7 @@ export async function getServerSideProps({ params }) {
 const Subcategory = ({dataitem , filteritem}) => {
   const [page, setPage] = useState(0);
 
-  
+  const [currentComponent, setCurrentComponent] = useState('Rugs');
   const [productdata, setProductData] = useState()
   const [filteritemarray, setFilterItemArray] = useState([])
   const [currenttag, setCurrentTag] = useState(null)
@@ -245,6 +247,24 @@ useEffect(()=>{
 
 },[value])
 
+
+
+
+const pathname = usePathname()
+
+  const renderComponent = () => {
+    switch (pathname) {
+      case '/subcategory/Rugs':
+        return <Rugs  filterData ={filterData}/>;
+        case '/subcategory/Sofa':
+          return <Sofa  filterData ={filterData}/>;
+
+      
+                               
+      default:
+        return null;
+    }
+  };
 
   return (
     <div >
@@ -572,8 +592,8 @@ step={5}
         </div>
 
       </div>
-
-             <Rugs filterData={filterData}/>
+             {renderComponent()}
+             {/* <Rugs filterData={filterData}/> */}
 
       {/* <div className='grid grid-cols-1 md:grid-cols-3 w-full gap-2 h-[600px] overflow-y-scroll no-scrollbar mt-10 place-items-center'>
       {

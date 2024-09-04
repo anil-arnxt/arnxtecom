@@ -3,6 +3,8 @@ import { Router, useRouter } from 'next/router'
 import React from 'react'
 
 const Rugs = ({filterData}) => {
+
+  console.log(filterData)
   const router = useRouter()
 
   const handlebuynow = (Id)=>{

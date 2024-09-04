@@ -1,10 +1,15 @@
 import { useAppContext } from '@/context/Context'
+import axios from 'axios'
 import { ArrowUpFromLine, CircleCheckBig, CirclePlus, CircleX } from 'lucide-react'
 import React, { useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast'
 
 const Sofa = () => {
     
+
+  const imagesuploadurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/arnxtecomimageupload'
+
+  const uploadproducturl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/addproductarnxtecom'
    
     const [productjson, setProductJson] = useState({
         productname :'',
@@ -304,6 +309,178 @@ const handleusdzfile = (e)=>{
 }
 
 
+const uploadImages = async  ()=>{
+  const temparray = []
+
+  for(let i=0; i<images.length; i++){
+
+  const url =  imagesuploadurl;
+
+
+  await fetch(url, {
+    method: "POST",
+    body: images[i].name,
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      fetch(res.uploadURL, {
+        method: "PUT",
+        headers: {
+          ContentType: "image/jpeg",
+        },
+
+        body: images[i],
+      })
+        .then((res) => {
+          if (res.status === 200) {
+            let resnew = res.url.split("?");
+            let imgurl = resnew[0];
+
+             temparray.push(imgurl)  
+
+          }
+        })
+        .catch((err) => console.log(err));
+    })
+    .catch((err) => console.log(err));
+  }
+return temparray
+
+
+}
+
+const uploadglbfile = async ()=>{
+
+  try {
+    const url = imagesuploadurl;
+
+    const res = await fetch(url, {
+        method: "POST",
+        body: glbfile.name,
+    });
+    const data = await res.json();
+
+ 
+    const uploadRes = await fetch(data.uploadURL, {
+        method: "PUT",
+        headers: {
+            ContentType: "image/jpeg",
+        },
+        body: glbfile,
+    });
+
+    if (uploadRes.status === 200) {
+        const resnew = uploadRes.url.split("?");
+        const imgurl = resnew[0];
+        return imgurl; 
+    } else {
+        throw new Error('Image upload failed');
+    }
+} catch (error) {
+    console.error("An error occurred:", error);
+    return undefined; 
+}
+
+}
+
+const uploadusdzfile = async ()=>{
+  try {
+    const url = imagesuploadurl;
+
+    const res = await fetch(url, {
+        method: "POST",
+        body: usdzfile.name,
+    });
+    const data = await res.json();
+
+ 
+    const uploadRes = await fetch(data.uploadURL, {
+        method: "PUT",
+        headers: {
+            ContentType: "image/jpeg",
+        },
+        body: usdzfile,
+    });
+
+    if (uploadRes.status === 200) {
+        const resnew = uploadRes.url.split("?");
+        const imgurl = resnew[0];
+        return imgurl; 
+    } else {
+        throw new Error('Image upload failed');
+    }
+} catch (error) {
+    console.error("An error occurred:", error);
+    return undefined; 
+}
+
+}
+
+const handlesaveproduct = async ()=>{
+    
+  try {
+    const [imagesurl, glburl, usdzurl] =    await Promise.all([
+          uploadImages(),
+
+          uploadglbfile(),
+          uploadusdzfile()
+         
+       ])
+
+      
+
+  
+    const body = {
+       Id: new Date().getTime().toString(),
+       productname : productjson.productname.toLowerCase(),
+       brandname: productjson.brand.toLowerCase(),
+       sku: productjson.sku,
+       vendor: productjson.vendor,
+       category:  'Furniture',
+       subcategory: 'Sofa',
+        tags: productjson.tags,
+         mrp: productjson.mrp,
+         offerprice: productjson.offerprice,
+        colors: productjson.colors,
+      
+        details: productjson.details,
+      
+        shippingdetails: productjson.shippingdetails,
+       
+        material: productjson.material,
+        sofasize: productjson.sofasize,
+        sofashape: productjson.sofashape,
+        sofatype: productjson.sofatype,
+        roomtype: productjson.roomtype,
+       
+        additionalinfo: productjson.additionalinfo,
+        shippingdetails: productjson.shippingdetails,
+        care: productjson.care,
+        images : imagesurl,
+      
+        glbfile: glburl,
+        usdzfile: usdzurl
+    }  
+
+
+  
+    
+    const response = await axios.post(uploadproducturl, body);
+      if(response.status === 200){
+        toast.success('Product added!')
+         window.location.reload()
+
+      }
+      
+
+   } catch (error) {
+       console.error("An error occurred during the uploads:", error);
+   }
+}
+
+
+
+
 console.log(productjson)
 
   return (
@@ -312,7 +489,7 @@ console.log(productjson)
      <div className='w-full  h-12 border-2 rounded-xl bg-gray-200 top-0 sticky'>
 
           <div className='w-full h-full  flex flex-row justify-end items-center ' >
-            <button className='border-2 rounded-xl px-2 bg-gray-400 mr-5 '>Save</button>
+            <button className='border-2 rounded-xl px-2 bg-gray-400 mr-5 ' onClick={handlesaveproduct}>Save</button>
 
           </div>
 
