@@ -1,10 +1,11 @@
+
 import { useRouter } from 'next/router'
 import React, { useState, useEffect, useMemo } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
-import { ArrowUpRightFromSquare, ChevronRightIcon, Filter, Heart, IndentDecrease, IndentIncrease, Settings2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpRightFromSquare, ChevronDown, ChevronRightIcon, ChevronUp, Filter, Heart, IndentDecrease, IndentIncrease, Settings2 } from 'lucide-react';
 import Image from 'next/image';
 
 import ReactPaginate from "react-paginate"; 
@@ -15,6 +16,7 @@ import axios from 'axios';
 import Rugs from '../components/subcategorycomponents/Rugs';
 import { usePathname } from 'next/navigation';
 import Sofa from '../components/subcategorycomponents/Sofa';
+import Wallpapers from '../components/subcategorycomponents/Wallpapers';
 
 const getsubcategorydataurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getsubcategoryitemarnxtecom'
 
@@ -23,7 +25,7 @@ const getfilteritemsurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.c
 export async function getServerSideProps({ params }) {
   const { subcategory } = params; 
 
-
+  
 
   const body = {
     subcategory: subcategory,
@@ -40,12 +42,14 @@ export async function getServerSideProps({ params }) {
 
 
   return {
-    props: { dataitem, filteritem },
+    props: { dataitem, filteritem, subcategory },
   };
 }
 
-const Subcategory = ({dataitem , filteritem}) => {
+const Subcategory = ({dataitem , filteritem, subcategory}) => {
   const [page, setPage] = useState(0);
+  const router = useRouter()
+
 
   const [currentComponent, setCurrentComponent] = useState('Rugs');
   const [productdata, setProductData] = useState()
@@ -56,19 +60,42 @@ const Subcategory = ({dataitem , filteritem}) => {
 
   const [currentfiltername, setCurrentFilterName] = useState()
 
+    const [activefilteritem, setActiveFilterItem] = useState([])
+
+    useEffect(() => {
+
+    
+
+       
+        setProductData(dataitem);
+        setFilters(filteritem);
+      
+
   
+    }, [subcategory]);
 
-  useEffect(()=>{
+    useEffect(() => {
+ 
+      
+        setActiveFilterItem(filteritem[0].filters?.map(() => 0)); 
+      
+    }, [filters]);
 
-      setProductData(dataitem)
+  const handleclickall = (index, name)=>{
+    const updatedIndices = [...activefilteritem];
+    updatedIndices[index] = true; 
+    setActiveFilterItem(updatedIndices);
+  }
 
-      setFilters(filteritem)
-
-  },[])
+  const handlecloseall = (index)=>{
+    const updatedIndices = [...activefilteritem];
+    updatedIndices[index] = false; 
+    setActiveFilterItem(updatedIndices);
+  }
 
   const n = 9
-  
-  const filterData = useMemo(() => {
+
+   const filterData = useMemo(() => {
     return productdata?.slice(page * n, (page + 1) * n);
   }, [page, productdata]);
   
@@ -85,7 +112,7 @@ const Subcategory = ({dataitem , filteritem}) => {
           setDropDown(!dropdown)
       }
 
-      const router = useRouter()
+    
       const { category } = router.query
 
       const handleproductclick = (id)=>{
@@ -95,7 +122,7 @@ const Subcategory = ({dataitem , filteritem}) => {
     
         }
 
-     
+    
 
         
     useEffect(()=>{
@@ -103,6 +130,8 @@ const Subcategory = ({dataitem , filteritem}) => {
         let temparr = []
 
          const filterfinal = currentfiltername?.toLowerCase()
+
+      
 
          
       
@@ -127,7 +156,7 @@ const Subcategory = ({dataitem , filteritem}) => {
                 }else{
                   if(filteritemarray.includes(item[filterfinal])){
 
-          
+                    
                     temparr = [...temparr, item]
                  }
             
@@ -147,6 +176,8 @@ const Subcategory = ({dataitem , filteritem}) => {
      }
 
  },[filteritemarray,currentfiltername])
+
+
 
 
 
@@ -196,6 +227,8 @@ const handlefilterchange = (e, filtername)=>{
 
     const body = e.target
 
+    
+
 
     if(body.checked){
           if(!filteritemarray.includes(body.value)){
@@ -220,30 +253,67 @@ const handlefilterchange = (e, filtername)=>{
 
 useEffect(()=>{
 
-    let temparr = []
+
+   const subcat = pathname.split('/')[2]
+     if(subcat === 'Wallpapers'){
+
+      let temparr = []
 
 
-           if(productdata !== undefined){
-             
-            for(let item of dataitem ){
+      if(productdata !== undefined){
+        
+       for(let item of dataitem ){
 
-                for (let price of item.sizeprice){
-                  if(Number(price.offerprice) > Number(value[0]) && Number(price.offerprice) < Number(value[1])){
+          
+             if(Number(item.offerprice) > Number(value[0]) && Number(item.offerprice) < Number(value[1])){
 
-                    if(!temparr.includes(item)){
-                      temparr = [...temparr, item]
+               if(!temparr.includes(item)){
+                 temparr = [...temparr, item]
 
-                    }
-    
-                  }
+               }
 
-                }
-            
-                 }
-  
-            setProductData(temparr)
+             }
+
+           
+       
+            }
+
+       setProductData(temparr)
+
+      }
+
+     }
+
+     if(subcat === 'Rugs'){
+
+      let temparr = []
+
+
+      if(productdata !== undefined){
+        
+       for(let item of dataitem ){
+
+           for (let price of item?.sizeprice){
+             if(Number(price.offerprice) > Number(value[0]) && Number(price.offerprice) < Number(value[1])){
+
+               if(!temparr.includes(item)){
+                 temparr = [...temparr, item]
+
+               }
+
+             }
 
            }
+       
+            }
+
+       setProductData(temparr)
+
+      }
+
+     }
+
+  
 
 },[value])
 
@@ -258,6 +328,8 @@ const pathname = usePathname()
         return <Rugs  filterData ={filterData}/>;
         case '/subcategory/Sofa':
           return <Sofa  filterData ={filterData}/>;
+          case '/subcategory/Wallpapers':
+            return <Wallpapers  filterData ={filterData}/>;
 
       
                                
@@ -472,7 +544,7 @@ step={5}
     </div>
 
     {
-     filters &&   filters[0]?.filters.map((item,index)=>(
+     filteritem &&   filteritem[0]?.filters.map((item,ind)=>(
         <div className='flex flex-col border-2 mt-5 p-5'>
         <div className='mt-5'>
             <p className='text-xl font-bold'>
@@ -486,7 +558,12 @@ step={5}
         <ul className='list-none flex flex-col gap-2'>
           {
 
-          item.filtervalue &&   item.filtervalue?.map((filter)=>(
+
+            activefilteritem[ind] ? 
+
+          item.filtervalue &&   item.filtervalue?.map((filter, index)=>(
+
+                
 
               <li>
               <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
@@ -495,11 +572,43 @@ step={5}
                </p>
                <input type='checkbox' value={filter} id='catcheckbox' onChange={(e)=>handlefilterchange(e,item.filtername)}/>
               </div>
-          </li>
+          </li> 
+
+
+            ))
+
+            : 
+
+            item.filtervalue &&   item.filtervalue?.map((filter, index)=>(
+
+                 index < 4 ? 
+
+              <li>
+              <div className='inline-flex border-2 w-full rounded-xl justify-between p-2'>
+               <p>
+                {filter}
+               </p>
+               <input type='checkbox' value={filter} id='catcheckbox' onChange={(e)=>handlefilterchange(e,item.filtername)}/>
+              </div>
+          </li> 
+          :''
+
 
             ))
           }
                       </ul>
+                       <div className='flex flex-fol justify-center items-center mt-2 cursor-pointer'>
+
+                     {
+                      activefilteritem[ind] ? 
+                      <ChevronUp onClick={()=> handlecloseall(ind, item.filtername)}/>
+
+                      : 
+                      <ChevronDown onClick={()=> handleclickall(ind, item.filtername)}/>
+
+                     } 
+                        </div>
+                    
 
         </div>
         

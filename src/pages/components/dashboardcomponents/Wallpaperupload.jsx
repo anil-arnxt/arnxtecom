@@ -15,8 +15,8 @@ const Wallpaperupload = () => {
 
         rollwidth: '',
         rollheight: '',
-        mrproll: '',
-        mrpsqft: '',
+        offerprice: '',
+        offerpricesqft: '',
         vendor: '',
         category: 'Furnishing',
         subcategory: 'Wallpapers',
@@ -29,7 +29,7 @@ const Wallpaperupload = () => {
          productdetails: '',
          designstyle: '',
          collection: '',
-
+         colors: []
      
 
     })
@@ -456,6 +456,19 @@ const handleinputchange = (e)=>{
 
 
         const handleaddcolorinput = (value)=>{
+
+          setProductJson((prevState) => {
+
+            const updateditems = prevState['colors'].includes(currentcolor) 
+                ? prevState['colors'] 
+                : [...prevState['colors'], currentcolor.toLowerCase()]; 
+    
+            return {
+                ...prevState,
+                ['colors']: updateditems
+            };
+        });
+
             setProductJson((prevState) => {
 
                 const updatedarray =  [...prevState['colorinput'], {
@@ -479,6 +492,8 @@ const handleinputchange = (e)=>{
              document.getElementById('currentimageinputroom').value = ''
 
         }
+
+        console.log(productjson)
 
 
   const handleremovecolorimage = (ind)=>{
@@ -679,8 +694,8 @@ const handlesaveproduct = async ()=>{
        rollheight: productjson.rollheight,
 
         tags: productjson.tags,
-        mrproll: productjson.mrproll,
-        mrpsqft: productjson.mrpsqft,
+        offerprice: productjson.offerprice,
+        offerpricesqft: productjson.offerpricesqft,
         colors: productjson.colors,
       
       productdetails: productjson.productdetails,
@@ -765,11 +780,11 @@ const handlesaveproduct = async ()=>{
                 <div className='w-full flex flex-row'>
                 <div className='w-100 p-2 flex flex-col justify-start items-start  gap-1 '>
                     <label className='text-md text-gray-500 font-normal'>MRP/Roll</label>
-                    <input className='w-full  border-2 rounded-xl outline-none pl-2' name='mrproll'  onChange={handleinputchange} />
+                    <input className='w-full  border-2 rounded-xl outline-none pl-2' name='offerprice'  onChange={handleinputchange} />
                 </div>
                 <div className='w-100 p-2 flex flex-col justify-start items-start  gap-1 '>
                     <label className='text-md text-gray-500 font-normal'>MRP/sq.ft</label>
-                    <input className='w-full  border-2 rounded-xl outline-none pl-2' name='mrpsqft'  onChange={handleinputchange}/>
+                    <input className='w-full  border-2 rounded-xl outline-none pl-2' name='offerpricesqft'  onChange={handleinputchange}/>
                 </div>
                
 
@@ -1021,11 +1036,11 @@ className="flex items-center justify-center w-12 h-12 text-white bg-blue-500 rou
           
 
                     </div>
-                    <div className='flex flex-row w-full min-h-48 gap-1 overflow-scroll no-scrollbar m-1 p-2 border-2 rounded-xl'>
+                    <div className='flex flex-row w-full min-h-48 gap-2 overflow-scroll no-scrollbar m-1 p-2 border-2 rounded-xl'>
                 {
                      productjson.colorinput?.map((file,index)=>(
 
-                        <div  className='flex flex-col justify-center items-center'>
+                        <div  className='flex flex-col justify-center items-center border-2'>
 
                             <div className='relative flex flex-row'>
                            

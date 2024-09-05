@@ -1,10 +1,14 @@
+
 import { Heart } from 'lucide-react'
+import Image from 'next/image'
 import { Router, useRouter } from 'next/router'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
 const Rugs = ({filterData}) => {
 
-  console.log(filterData)
+ 
+  
+
   const router = useRouter()
 
   const handlebuynow = (Id)=>{
@@ -15,7 +19,9 @@ const Rugs = ({filterData}) => {
 
 <div className='grid grid-cols-1 md:grid-cols-3 w-full gap-2 h-[600px] overflow-y-scroll no-scrollbar mt-10 place-items-center'>
       {
-              filterData && filterData.map((product,index)=>(
+              filterData && filterData?.map((product,index)=>(
+
+            
 
                 <div key={product.Id} className='h-auto w-[250px] shadow-lg rounded-xl p-2 '>
                 <div className='relative top-5 flex justify-between mb-4'>
@@ -42,9 +48,14 @@ const Rugs = ({filterData}) => {
               
  
                 </div>
-                 <div className='flex justify-center items-center w-full h-[250px] mt-5'>
-                     <img src={product.images[0]} className='object-contain w-full h-full roundex-xl'/>
-                  </div>
+
+                {
+                 
+                  <div className='flex justify-center items-center w-full h-[250px] mt-5'>
+                  <img src={  product.images[0] }   alt='image'  className='object-contain w-full h-full roundex-xl'/>
+               </div> 
+                }
+                
               
                <div className='mt-2'>
                <p className='text-l text-zinc-400 font-bold'>
