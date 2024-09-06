@@ -11,6 +11,7 @@ import { ImageZoom } from 'react-responsive-image-zoom';
 import '@/pages/product/product.css'
 import { Ecomcontext, useAppContext } from '@/context/context'
 import Rugs from '../components/productdetailscomponent/Rugs'
+import Wallpapers from '../components/productdetailscomponent/Wallpapers'
 
 
 
@@ -46,132 +47,147 @@ export async function getServerSideProps({ params }) {
 
 const Product = ({dataitem}) => {
 
-    //     const {quantity , setQuantity} =   useAppContext()
+        const {quantity , setQuantity} =   useAppContext()
         
-    //      const [currentimage, setCurrentImage] = useState(dataitem && dataitem.productmainimage)
-    //     const [currentproductdetails, setCurrentProductDetails] = useState(dataitem['care'])
-    //     const [activeindeximage, setActiveIndexImage] = useState(0)
+         const [currentimage, setCurrentImage] = useState(dataitem && dataitem.productmainimage)
+        const [currentproductdetails, setCurrentProductDetails] = useState(dataitem['care'])
+        const [activeindeximage, setActiveIndexImage] = useState(0)
       
 
-    // const [tempquantity, setTempQuantity] = useState(0)
-    // const [activepriceindex, setActivePriceIndex] = useState(0)
+    const [tempquantity, setTempQuantity] = useState(0)
+    const [activepriceindex, setActivePriceIndex] = useState(0)
 
-    //  const handleimageclick = (value, index)=>{
-    //        setActiveIndexImage(index)
-    //       setActiveIndexImage(index)
-    //  }        
+     const handleimageclick = (value, index)=>{
+           setActiveIndexImage(index)
+          setActiveIndexImage(index)
+     }        
 
-    // const [activeIndex, setActiveIndex] = useState(0);
+    const [activeIndex, setActiveIndex] = useState(0);
 
-    // const handleClick = (index, value) => {
+    const handleClick = (index, value) => {
 
    
-    //   setActiveIndex(index);
-    //   setCurrentProductDetails(dataitem[value])
-    // };
+      setActiveIndex(index);
+      setCurrentProductDetails(dataitem[value])
+    };
 
-    // const handleincreaseitem = (id)=>{
+    const handleincreaseitem = (id)=>{
 
-    //   if (quantity.length === 0) {
-    //     setQuantity([
-    //       {
-    //         Id: id,
-    //         quantity: 1,
-    //       },
-    //     ]);
-    //   } else {
-    //     const newarr = quantity.map((item) => {
-    //       if (item.Id === id) {
+      if (quantity.length === 0) {
+        setQuantity([
+          {
+            Id: id,
+            quantity: 1,
+          },
+        ]);
+      } else {
+        const newarr = quantity.map((item) => {
+          if (item.Id === id) {
            
-    //         return { ...item, quantity: item.quantity + 1 };
-    //       }
-    //       return item;
-    //     });
+            return { ...item, quantity: item.quantity + 1 };
+          }
+          return item;
+        });
     
      
-    //     const itemExists = newarr.some(item => item.Id === id);
+        const itemExists = newarr.some(item => item.Id === id);
     
       
-    //     if (!itemExists) {
-    //       newarr.push({
-    //         Id: id,
-    //         quantity: 1,
-    //       });
-    //     }
+        if (!itemExists) {
+          newarr.push({
+            Id: id,
+            quantity: 1,
+          });
+        }
     
-    //     setQuantity(newarr);
-    //   }
-    // }
+        setQuantity(newarr);
+      }
+    }
 
 
 
-    // const handledecreaseitem = (id)=>{
+    const handledecreaseitem = (id)=>{
 
-    //   const newarr = quantity.map((item) => {
-    //     if (item.Id === id) {
+      const newarr = quantity.map((item) => {
+        if (item.Id === id) {
          
-    //       return { ...item,  quantity: item.quantity === 0 ? 0 : item.quantity - 1 };
-    //     }
-    //     return item;
-    //   });
+          return { ...item,  quantity: item.quantity === 0 ? 0 : item.quantity - 1 };
+        }
+        return item;
+      });
 
   
-    //   setQuantity(newarr);
+      setQuantity(newarr);
 
-    // }
+    }
 
-    // const [isClient, setIsClient] = useState(false);
+    const [isClient, setIsClient] = useState(false);
 
-    // useEffect(() => {
-    //     setIsClient(true);
-    // }, []);
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
   
-    // const items = [
+    const items = [
     
-    //   'Care',
-    //    'DesignStory',
-    //   'Details',
-    //   'ShippingDetails'
-    // ];
+      'Care',
+       'DesignStory',
+      'Details',
+      'ShippingDetails'
+    ];
 
 
 
-    // const handleAddToCart = async (id, quantity)=>{
+    const handleAddToCart = async (id, quantity)=>{
           
-    //          if(sessionStorage.getItem('isLogin')){
+             if(sessionStorage.getItem('isLogin')){
 
-    //             const email = sessionStorage.getItem('email')
+                const email = sessionStorage.getItem('email')
 
-    //           const body = {
-    //             Id: email,
-    //             productid: id,
-    //             quantity: quantity
-    //           }
+              const body = {
+                Id: email,
+                productid: id,
+                quantity: quantity
+              }
               
 
-    //           try{
+              try{
 
-    //             const res = await axios.post(addtocarturl, body)
-    //             console.log(res.data)
+                const res = await axios.post(addtocarturl, body)
+                console.log(res.data)
 
-    //           }catch(error){
-    //             console.log(error)
-    //           }
+              }catch(error){
+                console.log(error)
+              }
                 
-    //          }else{
+             }else{
               
-    //          }
+             }
 
-    // }
+    }
+
+    const renderComponent = () => {
+      switch (dataitem && dataitem.subcategory) {
+        case 'Rugs':
+          return <Rugs  dataitem ={dataitem}/>;
+          
+            case 'Wallpapers':
+              return <Wallpapers  dataitem ={dataitem}/>;
+  
+        
+                                 
+        default:
+          return null;
+      }
+    };
 
 
-
+  console.log(dataitem)
  
   return (
     <div>
         <Navbar/>
 
-        <Rugs dataitem= {dataitem}/>
+        {renderComponent()}
 {/* 
         <div className='container mx-auto p-4 md:p-10'>
   <div className='grid md:grid-cols-12 grid-cols-1'>

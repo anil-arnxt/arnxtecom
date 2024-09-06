@@ -13,6 +13,9 @@ import React, { createContext, useContext, useState } from 'react'
    const [fetchwishlist, setFetchWishlist] = useState(false)
    const [activeComponent, setActiveComponent] = useState('Rugsupload');
 
+
+  
+
    
   return (
      <Ecomcontext.Provider  value= { {
@@ -29,7 +32,9 @@ import React, { createContext, useContext, useState } from 'react'
           fetchwishlist, 
           setFetchWishlist,
           activeComponent,
-          setActiveComponent
+          setActiveComponent,
+      
+        
       
       
         }}>

@@ -17,6 +17,8 @@ import Rugs from '../components/subcategorycomponents/Rugs';
 import { usePathname } from 'next/navigation';
 import Sofa from '../components/subcategorycomponents/Sofa';
 import Wallpapers from '../components/subcategorycomponents/Wallpapers';
+import { useAppContext } from '@/context/Context';
+import toast, { Toaster } from 'react-hot-toast';
 
 const getsubcategorydataurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getsubcategoryitemarnxtecom'
 
@@ -39,7 +41,7 @@ export async function getServerSideProps({ params }) {
   const response2 = await axios.post(getfilteritemsurl, body);
   const filteritem = response2.data;
 
-
+  
 
   return {
     props: { dataitem, filteritem, subcategory },
@@ -47,12 +49,15 @@ export async function getServerSideProps({ params }) {
 }
 
 const Subcategory = ({dataitem , filteritem, subcategory}) => {
+
+    
   const [page, setPage] = useState(0);
   const router = useRouter()
 
 
+
   const [currentComponent, setCurrentComponent] = useState('Rugs');
-  const [productdata, setProductData] = useState()
+  const [productdata, setProductData] = useState(dataitem)
   const [filteritemarray, setFilterItemArray] = useState([])
   const [currenttag, setCurrentTag] = useState(null)
 
@@ -62,17 +67,20 @@ const Subcategory = ({dataitem , filteritem, subcategory}) => {
 
     const [activefilteritem, setActiveFilterItem] = useState([])
 
+
+
     useEffect(() => {
+      setProductData(dataitem);
+      setFilters(filteritem);
+    }, [dataitem, filteritem, subcategory]);
 
-    
 
-       
-        setProductData(dataitem);
-        setFilters(filteritem);
-      
-
+      const {query} = router
   
-    }, [subcategory]);
+  
+ 
+
+     console.log(productdata)
 
     useEffect(() => {
  
@@ -80,6 +88,8 @@ const Subcategory = ({dataitem , filteritem, subcategory}) => {
         setActiveFilterItem(filteritem[0].filters?.map(() => 0)); 
       
     }, [filters]);
+
+   
 
   const handleclickall = (index, name)=>{
     const updatedIndices = [...activefilteritem];
@@ -98,6 +108,32 @@ const Subcategory = ({dataitem , filteritem, subcategory}) => {
    const filterData = useMemo(() => {
     return productdata?.slice(page * n, (page + 1) * n);
   }, [page, productdata]);
+
+
+  useEffect(() => {
+     console.log(query)
+    // const fetchData = async () => {
+    //   if (!query.subcategory) return; // Ensure subcategory exists before fetching
+
+    //   const body = { subcategory: query.subcategory };
+
+    //   try {
+    //     // Fetch new data items
+    //     const response = await axios.post(getsubcategorydataurl, body);
+    //     setProductData(response.data);
+
+    //     // Fetch new filter items
+    //     const response2 = await axios.post(getfilteritemsurl, body);
+    //     setFilters(response2.data);
+    //   } catch (error) {
+    //     console.error("Error fetching data:", error);
+    //   }
+    // };
+
+    // fetchData();
+  }, [query.subcategory]);
+
+
   
       const [value, setValue] = useState([100, 60000]);
   
@@ -167,8 +203,14 @@ const Subcategory = ({dataitem , filteritem, subcategory}) => {
 
            
 
+           if(temparr.length > 0){
+            setProductData(temparr)
 
-          setProductData(temparr)
+           }
+           if(temparr.length === 0){
+              toast.error('Sorry not products found')
+              setProductData(dataitem)
+           }
          
     }
      if(filteritemarray.length === 0){
@@ -338,8 +380,12 @@ const pathname = usePathname()
     }
   };
 
+
+
+
   return (
     <div >
+      <Toaster/>
     <Navbar/>
 
     <div className='md:hidden  flex flex-col justify-center items-center'>

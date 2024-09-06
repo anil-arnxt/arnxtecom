@@ -221,26 +221,20 @@ const handleAddToCart = async (id, quantity)=>{
             <div className='flex flex-row justify-start items-center'>
               <PlusCircleIcon className='cursor-pointer'  onClick={()=> handleincreaseitem(dataitem && dataitem.Id)} />
   
-                  {
-                  quantity.map(item=>(
-                      item.Id === dataitem.Id ? 
-                      <input type='number' value ={quantity.length === 0 ? 0 : item.quantity} className='w-[60px] border-2 focus:outline-none mx-2 my-2 px-4 rounded-lg'/> : 
-                     ''
-                  ))
-                }
+              
+                      <input type='number' value ={quantity[0]?.quantity} className='w-[60px] border-2 focus:outline-none mx-2 my-2 px-4 rounded-lg'/> 
+              
+                
            
               <MinusCircleIcon className='cursor-pointer' onClick={()=> handledecreaseitem(dataitem && dataitem.Id)}/>
             </div>
           </div>
           <div className='mt-10 flex flex-row w-full md:w-[160px] justify-between items-center'>
   
-          {
-                  quantity.map(item=>(
-                      item.Id === dataitem.Id ? 
-                      <button className='rounded-xl bg-green-300 p-3' onClick={()=>handleAddToCart(item.Id, item.quantity)}>Add to cart</button> : 
-                     ''
-                  ))
-                }
+         
+                      <button className='rounded-xl bg-green-300 p-3' onClick={()=>handleAddToCart(quantity[0]?.Id, quantity[0]?.quantity)}>Add to cart</button>
+                
+                
            
             <Heart/>
           </div>
