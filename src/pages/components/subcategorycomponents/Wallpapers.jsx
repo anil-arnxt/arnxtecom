@@ -1,6 +1,8 @@
 import { Heart } from 'lucide-react';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
+import { AiFillLeftCircle, AiFillRightCircle } from 'react-icons/ai';
+import ReactPaginate from 'react-paginate';
 
 const Wallpapers = ({ filterData }) => {
   const router = useRouter();
@@ -90,6 +92,8 @@ const Wallpapers = ({ filterData }) => {
             </div>
           ))}
       </div>
+
+
     </div>
   );
 };

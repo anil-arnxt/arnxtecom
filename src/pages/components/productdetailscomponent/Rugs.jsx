@@ -10,6 +10,7 @@ import axios from 'axios'
 import { ImageZoom } from 'react-responsive-image-zoom';
 import '@/pages/product/product.css'
 import { Ecomcontext, useAppContext } from '@/context/context'
+import toast, { Toaster } from 'react-hot-toast'
 
 const addtocarturl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/addtocartarnxtecommerce'
 
@@ -20,10 +21,15 @@ const Rugs = ({dataitem}) => {
     const [currentimage, setCurrentImage] = useState(dataitem && dataitem.productmainimage)
    const [currentproductdetails, setCurrentProductDetails] = useState(dataitem['care'])
    const [activeindeximage, setActiveIndexImage] = useState(0)
+
+   const [selectedcolor, setSelectedColor] = useState()
  
 
 const [tempquantity, setTempQuantity] = useState(0)
 const [activepriceindex, setActivePriceIndex] = useState(0)
+
+const [currentquantity, setCurrentQuantity] = useState(0)
+
 
 const handleimageclick = (value, index)=>{
       setActiveIndexImage(index)
@@ -41,51 +47,18 @@ const handleClick = (index, value) => {
 
 const handleincreaseitem = (id)=>{
 
- if (quantity.length === 0) {
-   setQuantity([
-     {
-       Id: id,
-       quantity: 1,
-     },
-   ]);
- } else {
-   const newarr = quantity.map((item) => {
-     if (item.Id === id) {
-      
-       return { ...item, quantity: item.quantity + 1 };
-     }
-     return item;
-   });
-
-
-   const itemExists = newarr.some(item => item.Id === id);
-
- 
-   if (!itemExists) {
-     newarr.push({
-       Id: id,
-       quantity: 1,
-     });
-   }
-
-   setQuantity(newarr);
- }
+  setCurrentQuantity((prevData)=> prevData + 1)
 }
 
 
 
 const handledecreaseitem = (id)=>{
 
- const newarr = quantity.map((item) => {
-   if (item.Id === id) {
-    
-     return { ...item,  quantity: item.quantity === 0 ? 0 : item.quantity - 1 };
-   }
-   return item;
- });
 
 
- setQuantity(newarr);
+setCurrentQuantity((prevData)=>
+    prevData <  1 ? 0: 
+  prevData - 1)
 
 }
 
@@ -101,16 +74,27 @@ const items = [
 
 
 
-const handleAddToCart = async (id, quantity)=>{
-     
+const handleAddToCart = async (dataitem)=>{
+
+
+  
         if(sessionStorage.getItem('isLogin')){
 
            const email = sessionStorage.getItem('email')
 
+   
+
          const body = {
-           Id: email,
-           productid: id,
-           quantity: quantity
+          Id: email,
+          productid: dataitem.Id,
+          productname: dataitem.productname,
+          quantity: currentquantity,
+           size: dataitem.sizeprice[activepriceindex].size,
+           sizeunit: 'cm',
+           price : dataitem.sizeprice[activepriceindex].offerprice,
+           sku: dataitem.sku,
+           image: dataitem.images[activeindeximage],
+           color: selectedcolor
          }
          
 
@@ -118,13 +102,16 @@ const handleAddToCart = async (id, quantity)=>{
 
            const res = await axios.post(addtocarturl, body)
            console.log(res.data)
+           if(res.status === 200){
+            toast.success('Added to cart')
+           }
 
          }catch(error){
-           console.log(error)
+             toast.error(error.response.data)
          }
            
         }else{
-         
+           toast.error('please login first')
         }
 
 }
@@ -137,6 +124,8 @@ const handleAddToCart = async (id, quantity)=>{
   
   return (
     <div className='container mx-auto p-4 md:p-10'>
+
+      <Toaster/>
     <div className='grid md:grid-cols-12 grid-cols-1'>
       <div className='md:col-span-5 flex justify-center h-[500px] md:justify-start'>
         <div className='grid grid-rows-12 w-full md:w-[500px] place-items-center '>
@@ -206,7 +195,7 @@ const handleAddToCart = async (id, quantity)=>{
   
           <div className='flex flex-row justify-between w-full md:w-[160px] mt-5'>
             <div>
-              <select className='rounded-xl border-2 p-1'>
+              <select className='rounded-xl border-2 p-1' onChange={(e)=>setSelectedColor(e.target.value)}>
                 <option disabled selected> Color</option>
                 {
                    dataitem && dataitem.colors?.map(item=>(
@@ -219,20 +208,20 @@ const handleAddToCart = async (id, quantity)=>{
           </div>
           <div className='mt-5'>
             <div className='flex flex-row justify-start items-center'>
-              <PlusCircleIcon className='cursor-pointer'  onClick={()=> handleincreaseitem(dataitem && dataitem.Id)} />
+              <PlusCircleIcon className='cursor-pointer'  onClick={()=> handleincreaseitem()} />
   
               
-                      <input type='number' value ={quantity[0]?.quantity} className='w-[60px] border-2 focus:outline-none mx-2 my-2 px-4 rounded-lg'/> 
+                      <input type='number' value ={currentquantity} className='w-[60px] border-2 focus:outline-none mx-2 my-2 px-4 rounded-lg'/> 
               
                 
            
-              <MinusCircleIcon className='cursor-pointer' onClick={()=> handledecreaseitem(dataitem && dataitem.Id)}/>
+              <MinusCircleIcon className='cursor-pointer' onClick={()=> handledecreaseitem()}/>
             </div>
           </div>
           <div className='mt-10 flex flex-row w-full md:w-[160px] justify-between items-center'>
   
          
-                      <button className='rounded-xl bg-green-300 p-3' onClick={()=>handleAddToCart(quantity[0]?.Id, quantity[0]?.quantity)}>Add to cart</button>
+                      <button className='rounded-xl bg-green-300 p-3' onClick={()=>handleAddToCart(dataitem)}>Add to cart</button>
                 
                 
            

@@ -24,7 +24,7 @@ function MyApp({ Component, pageProps }) {
   function FetchCartData() {
     const { fetchcartdata, setFetchCartData, cartdata, setCartData, setWishlistItems, wishlistitems, fetchwishlist, setFetchWishlist } = useAppContext();
 
-  
+    
 
      useEffect(()=>{
 
@@ -36,7 +36,9 @@ function MyApp({ Component, pageProps }) {
             const body = { Id: email };
     
             const res = await axios.post(getcartitemsurl, body);
-            setCartItems(res.data)
+
+          
+            setCartData(res.data)
     
           } catch (error) {
             console.log(error);

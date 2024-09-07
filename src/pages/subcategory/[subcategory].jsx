@@ -75,12 +75,8 @@ const Subcategory = ({dataitem , filteritem, subcategory}) => {
     }, [dataitem, filteritem, subcategory]);
 
 
-      const {query} = router
-  
-  
- 
 
-     console.log(productdata)
+    
 
     useEffect(() => {
  
@@ -110,29 +106,8 @@ const Subcategory = ({dataitem , filteritem, subcategory}) => {
   }, [page, productdata]);
 
 
-  useEffect(() => {
-     console.log(query)
-    // const fetchData = async () => {
-    //   if (!query.subcategory) return; // Ensure subcategory exists before fetching
 
-    //   const body = { subcategory: query.subcategory };
-
-    //   try {
-    //     // Fetch new data items
-    //     const response = await axios.post(getsubcategorydataurl, body);
-    //     setProductData(response.data);
-
-    //     // Fetch new filter items
-    //     const response2 = await axios.post(getfilteritemsurl, body);
-    //     setFilters(response2.data);
-    //   } catch (error) {
-    //     console.error("Error fetching data:", error);
-    //   }
-    // };
-
-    // fetchData();
-  }, [query.subcategory]);
-
+ 
 
   
       const [value, setValue] = useState([100, 60000]);
@@ -804,29 +779,29 @@ step={5}
   
 </div>
 
- <div className='flex flex-col justify-center items-center w-full  py-2'>
 
- <ReactPaginate
+<div className='flex flex-col justify-center items-center w-full  py-2'>
+
+<ReactPaginate
 containerClassName={"pagination"}
 pageClassName={"page-item"}
 activeClassName={"active"}
 onPageChange={(event) => setPage(event.selected)}
-pageCount={Math.ceil(filterData?.length / n)}
+pageCount={Math.ceil(dataitem?.length / n)}
 breakLabel="..."
 previousLabel={
 
-  <AiFillLeftCircle size={25} className='mr-2' />
+ <AiFillLeftCircle size={25} className='mr-2' />
 
 }
 nextLabel={
 
-  <AiFillRightCircle size={25} className='ml-2' />
+ <AiFillRightCircle size={25} className='ml-2' />
 
 }
 />
 
- </div>
-
+</div>
 
 <Footer/>
 

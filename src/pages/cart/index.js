@@ -7,6 +7,10 @@ import { usePathname } from 'next/navigation'
 import { ArrowBigDown, ArrowBigUp, ArrowLeft, Delete, DeleteIcon, LucideDelete, Minus, MinusCircleIcon, Plus, PlusCircleIcon, ShoppingCart, Star, Truck } from 'lucide-react'
 import { useRouter } from 'next/router'
 import { Ecomcontext, useAppContext } from '@/context/context'
+import axios from 'axios'
+import toast, { Toaster } from 'react-hot-toast'
+
+const removecartitemurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/deletecartdataarnxtecom'
 
 const index = () => {
 
@@ -19,16 +23,12 @@ const index = () => {
       router.push('/checkout')
   }
 
-  const {cartdata,setCartData, setSubTotal, subtotal} = useAppContext()
-
- 
-
-
+  const {cartdata,setCartData, setSubTotal, subtotal, fetchcartdata, setFetchCartData} = useAppContext()
 
   useEffect(()=>{
 
     const total = cartdata && cartdata.reduce((accumulator, item) => {
-      return accumulator + item['product'].offerprice * item['quantity'];
+      return accumulator + item.price * item.quantity;
     }, 0);
 
     setSubTotal(total)
@@ -40,7 +40,7 @@ const index = () => {
   const handleincreaseitem = (id)=>{
 
     const newarr = cartdata && cartdata.map((item) => {
-      if (item['product'].Id === id) {
+      if (item.productid === id) {
        
         return { ...item, quantity: item.quantity + 1 };
       }
@@ -52,10 +52,13 @@ const index = () => {
   
 }
 
+
+
+
 const handledecreaseitem = (id)=>{
 
   const newarr = cartdata && cartdata.map((item) => {
-    if (item['product'].Id === id) {
+    if (item.productid === id) {
      
       return { ...item,  quantity: item.quantity === 0 ? 0 : item.quantity - 1 };
     }
@@ -67,13 +70,41 @@ const handledecreaseitem = (id)=>{
 
 }
 
+const handledeletecartitem = async  (id)=>{
 
+
+  if(sessionStorage.getItem('isLogin')){
+
+    const email = sessionStorage.getItem('email')
+
+    const body={
+      Id: email,
+      productid: id
+    }
+
+    try{
+      const response = await axios.post(removecartitemurl, body)
+
+       if(response.status === 200){
+        toast.success('Item deleted')
+        setFetchCartData(true)
+       }
+    }catch(error){
+       console.log(error)
+    }
+  }
+
+
+
+}
 
  
   return (
     <div>
-      <Navbar/>
 
+      <Toaster/>
+      <Navbar/>
+      
 
       <div className='container mx-auto min-h-[500px] flex flex-col '>
 
@@ -93,11 +124,15 @@ const handledecreaseitem = (id)=>{
             </div>
          </div>
 
+         {
+          cartdata?.length > 0 ? 
+         
+
          <table   >
          <thead className=''>
                       <tr className='border-2 border-teal-300 ' >
                         <th>Product</th>
-
+                        <th>Color</th>
                         <th>Quantity</th>
                         <th>Price</th>
                         <th>Remove</th>
@@ -109,20 +144,28 @@ const handledecreaseitem = (id)=>{
 
                           <tr  className='border-2 border-teal-300 '  >
                           <td className='flex justify-left items-left pt-10 pb-10'>
-                            <div className='inline-flex flex-row  '>
+                            <div className='inline-flex flex-row p-2 '>
 
-                               <Image src= {product['product'].productmainimage} width={200} height={200} className='w-full max-w-[100px]' />    
+                               <Image src= {product.image} width={200} height={200} className='w-full max-w-[100px]' />    
 
                                <div className='flex flex-col mx-5'>
                                <p className='w-auto text-md font-bold text-zinc-400 '>
 
-                                 {product['product'].productname.toUpperCase()}
-                              </p>
-                              <p  className='text-sm mt-10'>
-                              {`${product['product'].productlength}*${product['product'].productwidth}*${product['product'].productheight}`} (L*W*H)
+                                 {product.productname?.toUpperCase()}
                               </p>
 
-                              <div className=' flex mt-2'> <Star size={15} /> <Star  size={15}/>  </div>
+                              <div className='mt-5'>
+                              <p  className='text-sm '>
+                                {product.sku}
+                              </p>
+                              <p  className='text-sm'>
+                                {product.size} {product.sizeunit}
+                              </p>
+
+                              </div>
+                           
+
+                         
 
 
                                </div>
@@ -130,16 +173,22 @@ const handledecreaseitem = (id)=>{
                             </div>
                           </td>
                           <td>
+                            <div className='flex flex-row justify-center items-center'>
+                              <p>   {product.color}</p>
+                            </div>
+                         
+                          </td>
+                          <td>
                               <div className='flex flex-row justify-center items-center'>
-                                  <PlusCircleIcon className='cursor-pointer' onClick={()=>handleincreaseitem(product['product'].Id)} />
+                                  <PlusCircleIcon className='cursor-pointer' onClick={()=>handleincreaseitem(product.productid)} />
                                  <input type='number' value={product['quantity']} className='w-[60px] border-2 focus:outline-none mx-2 my-2 px-4 rounded-lg'/>
-                                   <MinusCircleIcon className='cursor-pointer' onClick={()=>handledecreaseitem(product['product'].Id)}/>
+                                   <MinusCircleIcon className='cursor-pointer' onClick={()=>handledecreaseitem(product.productid)}/>
                               </div>
                           </td>
                           <td>
                               <div className='flex justify-center items-center'>
                                 <p className='font-bold text-xl'>
-                                   ₹ {product['product'].offerprice * product['quantity']}
+                                   ₹ {product.price * product.quantity}
 
                                 </p>
                                  
@@ -147,7 +196,7 @@ const handledecreaseitem = (id)=>{
                           </td>
                           <td>
                               <div className='flex justify-center items-center'>
-                                <Delete className='cursor-pointer'/>
+                                <Delete className='cursor-pointer' onClick={()=>handledeletecartitem(product.productid)}/>
                                  
                               </div>
                           </td>
@@ -161,6 +210,21 @@ const handledecreaseitem = (id)=>{
                     </tbody>
 
          </table>
+
+         : <div className='flex justify-center items-center'>
+
+            <div className='flex justify-center items-center object-contain w-96 h-96 '>
+           <img src='https://arnxtecommercebucket.s3.ap-south-1.amazonaws.com/2eacfa305d7715bdcd86bb4956209038.jpg'/>
+
+              </div>
+          </div>
+}
+
+
+{
+
+
+  cartdata?.length > 0 ?
 
          <div className='flex flex-col sm:flex-row justify-between items-center mt-10 mb-20'>
     <div className='flex flex-row items-center'>
@@ -181,6 +245,7 @@ const handledecreaseitem = (id)=>{
       </button>
     </div>
   </div>
+    : ''}
 
       </div>
 

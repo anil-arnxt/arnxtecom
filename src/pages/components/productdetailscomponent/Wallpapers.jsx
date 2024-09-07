@@ -71,7 +71,7 @@ const items = [
 
 
 
-const handleAddToCart = async (id, quantity)=>{
+const handleAddToCart = async (dataitem)=>{
      
         if(sessionStorage.getItem('isLogin')){
 
@@ -79,18 +79,27 @@ const handleAddToCart = async (id, quantity)=>{
 
          const body = {
            Id: email,
-           productid: id,
-           quantity: currentquantity
+           productid: dataitem.Id,
+           productname: dataitem.productname,
+           quantity: currentquantity,
+            size: `${dataitem.rollwidth} * ${dataitem.rollheight}`,
+            sizeunit: 'meters',
+            price : dataitem.offerprice,
+            sku: dataitem.colorinput[activeIndex].patternno,
+            image: dataitem.colorinput[activeIndex].image2,
+            color: dataitem.colorinput[activeIndex].color
          }
          
 
          try{
 
            const res = await axios.post(addtocarturl, body)
-           console.log(res.data)
+           if(res.status === 200){
+            toast.success('Added to cart')
+           }
 
          }catch(error){
-           console.log(error)
+             toast.error(error.response.data)
          }
            
         }else{
@@ -115,7 +124,7 @@ const handleAddToCart = async (id, quantity)=>{
     <div className='container mx-auto p-4 md:p-10'>
      <Toaster/>
         
-    <div className='grid md:grid-cols-12 grid-cols-1'>
+    <div className='grid md:grid-cols-12 grid-cols-1 '>
       <div className='md:col-span-5 flex justify-center h-100 md:justify-start'>
         <div className='grid grid-rows-6 w-full md:w-[500px] place-items-center  '>
           <div className='row-span-10 w-full h-full  flex justify-center '>
@@ -212,7 +221,7 @@ const handleAddToCart = async (id, quantity)=>{
           <div className='mt-10 flex flex-row w-full md:w-[160px] justify-between items-center'>
   
          
-                      <button className='rounded-xl bg-green-300 p-3' onClick={()=>handleAddToCart(quantity[0]?.Id, quantity[0]?.quantity)}>Add to cart</button>
+                      <button className='rounded-xl bg-green-300 p-3' onClick={()=>handleAddToCart(dataitem)}>Add to cart</button>
              
            
             <Heart/>
@@ -270,6 +279,7 @@ const handleAddToCart = async (id, quantity)=>{
     
   
     </div>
+    
   </div>
   )
 }

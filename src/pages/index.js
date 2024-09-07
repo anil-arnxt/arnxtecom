@@ -1,6 +1,8 @@
 import React from "react";
-import Navbar from "./components/Navbar";
+
 import Banner from "./components/Banner";
+
+
 import {
   BadgeIndianRupee,
   Box,
@@ -14,11 +16,12 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
 
 const index = () => {
   return (
     <div>
-      <Navbar />
+       <Navbar/>
       <Banner />
 
       <div className="flex w-100 justify-center items-center mt-10 flex-wrap">

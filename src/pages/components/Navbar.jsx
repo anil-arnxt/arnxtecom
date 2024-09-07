@@ -1,4 +1,3 @@
-
 import { Heart, LogIn, LogOut, Menu, User, X } from 'lucide-react'
 import Link from 'next/link'
 import React, { useContext, useEffect, useState } from 'react'
@@ -10,153 +9,150 @@ import axios from 'axios'
 
 
 const getcartitemsurl = 'https://ymxx21tb7l.execute-api.ap-south-1.amazonaws.com/production/getcartitemsarnxtecom'
- 
 
 const Navbar = () => {
 
-  
-        const {cartdata, setCartData, fetchwishlist, setFetchWishlist} = useAppContext()
+    const {cartdata, setCartData, fetchwishlist, fetchcartdata, setFetchWishlist} = useAppContext()
 
        
-          const [cartitems, setCartItems] = useState()
+    const [cartitems, setCartItems] = useState()
 
+    console.log(fetchcartdata)
+
+ 
+
+  useEffect(() => {
+
+
+    const getdata = async () => {
+      try {
+        const email = sessionStorage.getItem('email');
+        const body = { Id: email };
+
+        const res = await axios.post(getcartitemsurl, body);
+         setCartItems(res.data)
        
-
-        useEffect(() => {
-
-  
-          const getdata = async () => {
-            try {
-              const email = sessionStorage.getItem('email');
-              const body = { Id: email };
       
-              const res = await axios.post(getcartitemsurl, body);
-               setCartItems(res.data)
-             
-            
-      
-            } catch (error) {
-              console.log(error);
-            }
-          };
-      
-          getdata();
-      
-        }, []);
 
-    const categorydatafurniture = [
-        'Chair',
-        'Table',
-        'Bed',
-        'Sofa',
-         'Barstool'
-    ]
+      } catch (error) {
+        console.log(error);
+      }
+    };
 
-    const categorydataelectical = [
-        'Light',
-        'Fan ',
-        'Chimney',
-        'Chandelier'
-       
-    ]
-    const categorydataelectronics = [
-        'AC',
-        'Refrigerator',
-        'Microwave',
-        'TV',
-        'Washing machine'
-       
-    ]
-    const categorydatafurnishing = [
-        'Rugs',
-        'Carpets',
-       
-       
-    ]
-    const categorydatawalls = [
-        'Wallpapers',
-        'Wallmurals',
-       ]
+    getdata();
+
+  }, []);
+
+const categorydatafurniture = [
+  'Chair',
+  'Table',
+  'Bed',
+  'Sofa',
+   'Barstool'
+]
+
+const categorydataelectical = [
+  'Light',
+  'Fan ',
+  'Chimney',
+  'Chandelier'
+ 
+]
+const categorydataelectronics = [
+  'AC',
+  'Refrigerator',
+  'Microwave',
+  'TV',
+  'Washing machine'
+ 
+]
+const categorydatafurnishing = [
+  'Rugs',
+  'Carpets',
+ 
+ 
+]
+const categorydatawalls = [
+  'Wallpapers',
+  'Wallmurals',
+ ]
 
 
 
-   const handlecategorydisplay = ()=>{
-       document.querySelector('.categorydiv').style.display = 'flex'
-   }
-   const handlecategorydisplaynone = ()=>{
-    document.querySelector('.categorydiv').style.display = 'none'
+const handlecategorydisplay = ()=>{
+ document.querySelector('.categorydiv').style.display = 'flex'
+}
+const handlecategorydisplaynone = ()=>{
+document.querySelector('.categorydiv').style.display = 'none'
 
-   }
-   const router = useRouter()
-   const [isOpen, setIsOpen] = useState(false);
-   const [mobilecategory, setMobileCategory] = useState(false)
-   const [email , setEmail] = useState()
+}
+const router = useRouter()
+const [isOpen, setIsOpen] = useState(false);
+const [mobilecategory, setMobileCategory] = useState(false)
+const [email , setEmail] = useState()
+
+
+
+const togglemobilecategory = ()=>{
+setMobileCategory(!mobilecategory)
+}
+
+const toggleSearchBar = () => {
+setIsOpen(!isOpen);
+};
+
+const [mobiledraweropen, setMobileDrawerOpen] = useState(false)
+const toggledrawer = ()=>{
+  setMobileDrawerOpen(!mobiledraweropen)
+}
+const handleCategoryClick = (value)=>{
+    router.push(`/category/${value}`)
+
+}
+
+const handleSubCategoryClick = (value)=>{
+  router.push(`/subcategory/${value}`)
+
+}
+
+const handleLogin = ()=>{
+  router.push('/login')
+}
+
+const handleLogout = ()=>{
+   sessionStorage.removeItem('email')
+   sessionStorage.removeItem('isLogin')
+   sessionStorage.removeItem('token')
+   setEmail(null)
+
+   router.push('/')
 
    
 
-   const togglemobilecategory = ()=>{
-      setMobileCategory(!mobilecategory)
-   }
+}
+const handlewishlist = ()=>{
 
-   const toggleSearchBar = () => {
-     setIsOpen(!isOpen);
-   };
 
-    const [mobiledraweropen, setMobileDrawerOpen] = useState(false)
-      const toggledrawer = ()=>{
-        setMobileDrawerOpen(!mobiledraweropen)
-      }
-      const handleCategoryClick = (value)=>{
-          router.push(`/category/${value}`)
+  router.push('/wishlist')
+}
 
-      }
+const handleshowcategory = ()=>{
+    document.querySelector('.categorylist').style.display = 'block'
+}
 
-      const handleSubCategoryClick = (value)=>{
-        router.push(`/subcategory/${value}`)
 
-      }
+useEffect(() => {
 
-      const handleLogin = ()=>{
-        router.push('/login')
-      }
-
-      const handleLogout = ()=>{
-         sessionStorage.removeItem('email')
-         sessionStorage.removeItem('isLogin')
-         sessionStorage.removeItem('token')
-         setEmail(null)
-
-         router.push('/')
-
-         
-
-      }
-      const handlewishlist = ()=>{
-
+  if (typeof window !== 'undefined') {
+    const storedEmail = sessionStorage.getItem('isLogin');
       
-        router.push('/wishlist')
-      }
-
-      const handleshowcategory = ()=>{
-          document.querySelector('.categorylist').style.display = 'block'
-      }
-
-    
-      useEffect(() => {
-      
-        if (typeof window !== 'undefined') {
-          const storedEmail = sessionStorage.getItem('isLogin');
-            
-          if (storedEmail === null) {
-            setEmail(false);
-          }else{
-            setEmail(storedEmail)
-          }
-        }
-      }, [email]);
-
-      console.log(email)
-   
+    if (storedEmail === null) {
+      setEmail(false);
+    }else{
+      setEmail(storedEmail)
+    }
+  }
+}, [email]);
   return (
     <div className='sticky top-0 z-50 bg-white w-100 min-h-[80px] flex justify-between pl-5 pr-5 '>
 

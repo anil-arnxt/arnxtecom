@@ -34,9 +34,6 @@ import React, { createContext, useContext, useState } from 'react'
           activeComponent,
           setActiveComponent,
       
-        
-      
-      
         }}>
 
         {children}
