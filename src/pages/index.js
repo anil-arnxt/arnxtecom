@@ -18,6 +18,8 @@ import Image from "next/image";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 
+
+
 const index = () => {
   return (
     <div>
@@ -112,6 +114,30 @@ const index = () => {
           </button>
         </div>
       </div>
+      <div className="container mx-auto flex w-100 justify-center flex-wrap mt-20 mb-10">
+        <div className="bg-orange-100 flex justify-center items-center flex-col p-5 m-5 rounded-xl">
+          <div>
+            <Box size={70} />
+          </div>
+          <h1 className="text-zinc-400 text-3xl font-bold">
+            Try products at your place with ease.
+          </h1>
+
+          <p className="mt-2">
+            {" "}
+            Exprience the ultimate experience of seeing products at your place
+            and then buy it{" "}
+          </p>
+        </div>
+        <div className="flex justify-center items-center  m-5 ">
+          <Image
+            src="/images/argif.gif"
+            width={600}
+            height={600}
+            className="rounded-xl"
+          />
+        </div>
+      </div>
 
       <div className="flex w-100 justify-center items-center mt-10 mb-10">
         <h2 className="text-xl text-zinc-400 font-bold">
@@ -168,6 +194,12 @@ const index = () => {
             </p>
           </div>
         </div>
+      </div>
+
+
+      <div className="container mx-auto flex w-full">
+        <img src={'https://arnxtecommercebucket.s3.ap-south-1.amazonaws.com/5565175.jpg'}/>
+
       </div>
 
       <div className="container mx-auto flex w-100 justify-between flex-wrap p-5 mt-10 mb-10">
@@ -262,30 +294,7 @@ const index = () => {
         </div>
       </div>
 
-      <div className="container mx-auto flex w-100 justify-center flex-wrap mt-20 mb-10">
-        <div className="bg-orange-100 flex justify-center items-center flex-col p-5 m-5 rounded-xl">
-          <div>
-            <Box size={70} />
-          </div>
-          <h1 className="text-zinc-400 text-3xl font-bold">
-            Try products at your place with ease.
-          </h1>
 
-          <p className="mt-2">
-            {" "}
-            Exprience the ultimate experience of seeing products at your place
-            and then buy it{" "}
-          </p>
-        </div>
-        <div className="flex justify-center items-center  m-5 ">
-          <Image
-            src="/images/argif.gif"
-            width={600}
-            height={600}
-            className="rounded-xl"
-          />
-        </div>
-      </div>
 
       <div
         className="mt-20 w-100 h-[300px] mb-20 flex container mx-auto justify-center items-center"

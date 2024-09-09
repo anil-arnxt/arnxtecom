@@ -202,8 +202,10 @@ const Subcategory = ({dataitem , filteritem, subcategory}) => {
 
     let temparray =[]
 
+  
+
       for ( let item of dataitem){
-          if(item.tags?.includes(currenttag)){
+          if(item.tags?.includes(currenttag?.toLowerCase())){
             temparray.push(item)
           }   
       }
@@ -212,7 +214,7 @@ const Subcategory = ({dataitem , filteritem, subcategory}) => {
         setProductData(temparray)
     }
 
-               
+    setProductData(temparray)            
 
 },[currenttag])
 
@@ -226,6 +228,11 @@ const handleTagsSelect = (value)=>{
 
 const handlePriceSorting = (value)=>{
 
+    const pathvalue = pathname.split('/')[2]
+    
+
+    if(pathvalue === 'Rugs'){
+
     if(value === 'High to low'){
      
         const sortedProducts = [...productdata].sort((a, b) => parseFloat(b.sizeprice[0].offerprice) - parseFloat(a.sizeprice[0].offerprice));
@@ -237,6 +244,24 @@ const handlePriceSorting = (value)=>{
         const sortedProducts = [...productdata].sort((a, b) => parseFloat(a.sizeprice[0].offerprice) - parseFloat(b.sizeprice[0].offerprice));
         setProductData(sortedProducts);
     }
+    }
+
+
+    else{
+          if(value === 'High to low'){
+     
+        const sortedProducts = [...productdata].sort((a, b) => parseFloat(b.offerprice) - parseFloat(a.offerprice));
+        setProductData(sortedProducts);
+     }
+    
+    if(value === 'Low to high'){
+     
+        const sortedProducts = [...productdata].sort((a, b) => parseFloat(a.offerprice) - parseFloat(b.offerprice));
+        setProductData(sortedProducts);
+    }
+    }
+
+
 }
     
 
@@ -771,12 +796,7 @@ step={5}
       </div> */}
     
     </div>
-
-
-          
-       
-
-  
+ 
 </div>
 
 
